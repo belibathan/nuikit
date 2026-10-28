@@ -1,7 +1,7 @@
 /* index.css is synced from the nuikit template (theme tokens + the kit layer, including the
    resolution-scaled html font-size: 1rem = 16px at 1080p). This file adds what the inventory needs
-   on top: the sheets, the slot tiles, the drop zones, scrollbars and item art. Colours are theme
-   tokens only (color-mix is lowered to rgba for Chromium 103 by vite-plugin-nuikit). */
+   on top: the slot grid, the slots, the drop zones and item art. Colours are theme tokens only
+   (color-mix is lowered to rgba for Chromium 103 by vite-plugin-nuikit). */
 @import "./index.css";
 
 html,
@@ -36,7 +36,7 @@ body.inv-dragging * {
   grid-template-columns: repeat(var(--inv-columns), var(--inv-slot-size));
   gap: var(--inv-gap);
 }
-/* the grid's selection tile (registry Selection, kit.css nk-indicator): the one lit mark, over the wells so the
+/* the grid's Selection (registry Selection, kit.css nk-indicator): the one lit mark, over the wells so the
    item stays visible through a soft face in the slot's own shape; it glides slot to slot on --nk-selection-time */
 .inv-grid-focus {
   z-index: 1;
@@ -44,7 +44,7 @@ body.inv-dragging * {
   --nk-control-sel-wall: rgba(var(--primary-rgb), calc(var(--nk-control-primary-tint, 0.16) * 0.5));
   --nk-control-sel-shade: 0;
   --nk-control-sel-rim: rgba(var(--primary-rgb), 0.5);
-  /* the slot's shape, set once: the selection tile (shape inherit) and the drag ghost both wear it */
+  /* the slot's shape, set once: the selection (shape inherit) and the drag ghost both wear it */
   --nk-control-host-radius: var(--nk-chip-radius);
   --nk-control-host-clip: var(--nk-chip-clip, none);
 }
@@ -56,14 +56,16 @@ body.inv-dragging * {
   display: flex;
   flex-direction: column;
   aspect-ratio: 1 / 1;
-  padding: 0.5rem;
+  /* safe inset: the count and badges stay inside the slot's curve */
+  --inv-inset: max(var(--nk-space-2), calc(var(--nk-chip-radius, 0.5rem) * 0.45));
+  padding: var(--inv-inset);
   border-radius: var(--nk-chip-radius);
   clip-path: var(--nk-chip-clip, none);
   background-color: color-mix(in oklab, var(--muted) 30%, transparent);
   transition: opacity 0s;
   isolation: isolate; /* the hover wash (::before) sits between the well and the content */
-  /* each tile lays out and paints on its own, and tiles scrolled out of view skip both until they come near
-     (the open lays out 70 tiles at once otherwise) */
+  /* each slot lays out and paints on its own, and slots scrolled out of view skip both until they come near
+     (the open lays out 70 slots at once otherwise) */
   contain: layout paint style;
   content-visibility: auto;
   contain-intrinsic-size: var(--inv-slot-size) var(--inv-slot-size);
@@ -86,8 +88,8 @@ body.inv-dragging * {
 .inv-slot[data-filled]:not([data-locked]):not([data-display]) {
   cursor: grab;
 }
-/* the pointer's mark is the grid's sliding tile (.inv-grid-focus); a slot outside a grid (the hotbar) has no hover */
-/* the drop target: the selection's colour along the inside of the tile */
+/* the pointer's mark is the grid's sliding Selection (.inv-grid-focus); a slot outside a grid (the hotbar) has no hover */
+/* the drop target: the selection's colour along the inside of the slot */
 .inv-slot[data-over] {
   background-color: var(--accent);
   box-shadow: inset 0 0 0 0.125rem var(--brand, var(--primary));
@@ -95,7 +97,7 @@ body.inv-dragging * {
 .inv-slot[data-source] {
   opacity: 0.4;
 }
-/* rarity roles (tokens 1.4: data-hue → the role's --hue-* ramp from the theme): a hairline in the
+/* rarity roles (data-hue → the role's --hue-* ramp from the theme): a hairline in the
    role's line colour and a tint rising from the bottom. Without the ramp (or a rarity) nothing changes. */
 .inv-slot[data-hue]:not([data-over]) {
   box-shadow: inset 0 0 0 var(--nk-line-width) var(--hue-line, transparent);
@@ -115,9 +117,9 @@ body.inv-dragging * {
   flex-shrink: 0;
   align-items: center;
   justify-content: space-between;
-  gap: 0.25rem;
+  gap: var(--nk-space-1);
   height: 1.125rem;
-  font-size: 0.75rem;
+  font-size: var(--nk-text-label);
   line-height: 1;
   color: var(--muted-foreground);
 }
@@ -149,12 +151,18 @@ body.inv-dragging * {
   white-space: nowrap;
   text-overflow: ellipsis;
   text-align: center;
+  font-family: var(--nk-type-label-family);
+  font-style: var(--nk-type-label-style);
   font-size: var(--nk-text-label);
-  line-height: 1rem;
+  line-height: var(--nk-leading-tight);
   font-weight: var(--nk-type-weight-strong);
+  letter-spacing: var(--nk-type-tracking-label);
+  text-transform: var(--nk-type-label-case);
+  /* a slanted face's overhang + the ellipsis clear the curve */
+  padding-inline: 0.15rem calc(0.15rem + var(--nk-type-overhang-clip));
 }
 
-/* durability, traced along the tile's outline (components/outline.tsx) */
+/* durability, traced along the slot's outline (components/outline.tsx) */
 .inv-outline {
   position: absolute;
   left: 0;
@@ -200,12 +208,12 @@ body.inv-dragging * {
   pointer-events: none;
 }
 
-/* the item under the cursor while dragging: a lifted tile */
+/* the item under the cursor while dragging, lifted off its slot */
 .inv-drag {
   border-radius: var(--nk-chip-radius);
   clip-path: var(--nk-chip-clip, none);
   background-color: var(--accent);
-  /* one lifted tile in the slot's own shape: a soft drop shadow, no ring (the drop target under it has the ring) */
+  /* in the slot's own shape: a soft drop shadow, no ring (the drop target under it has the ring) */
   box-shadow: 0 0.75rem 1.75rem -0.5rem rgba(var(--scrim-rgb), 0.6);
   /* picked up: it lifts off the slot (a quick swell past full size, then settles), straight */
   animation: inv-lift min(calc(var(--nk-time-base) * 1.6), 220ms) var(--nk-ease-enter, cubic-bezier(0.16, 1, 0.3, 1)) both;
@@ -220,7 +228,7 @@ body.inv-dragging * {
     opacity: 1;
   }
 }
-/* landed: the item settles into the slot that took it (slot-tile.tsx sets data-landed) */
+/* landed: the item settles into the slot that took it (inventory-slot.tsx sets data-landed) */
 .inv-slot[data-landed] .inv-img {
   animation: inv-land min(calc(var(--nk-time-base) * 1.6), 220ms) var(--nk-ease-enter, cubic-bezier(0.16, 1, 0.3, 1));
 }
@@ -282,20 +290,28 @@ html:is([data-nk-motion="reduced"], [data-nk-motion="off"]) .inv-slot[data-lande
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: var(--nk-space-2);
   min-width: 7.5rem;
-  padding: 0 1rem;
+  /* icon and text on one optical centre (a slanted scan face leans right) */
+  padding-inline: var(--nk-space-4) calc(var(--nk-space-4) + var(--nk-type-overhang-clip, 0px));
+  line-height: 1;
   box-shadow: inset 0 0 0 var(--nk-line-width) transparent;
-  font-size: 0.9375rem;
-  font-weight: var(--nk-type-weight-strong);
+  font-family: var(--nk-type-scan-family);
+  font-style: var(--nk-type-scan-style);
+  font-size: var(--text-sm);
+  font-weight: var(--nk-type-scan-weight);
+  letter-spacing: var(--nk-type-scan-tracking);
+  text-transform: var(--nk-type-scan-case);
 }
 .inv-zone-icon {
   display: flex;
+  flex-shrink: 0;
+  align-items: center;
   color: var(--muted-foreground);
 }
 .inv-zone-icon svg {
-  width: 1rem;
-  height: 1rem;
+  width: var(--nk-icon-md);
+  height: var(--nk-icon-md);
 }
 /* a player item is being dragged: the zones show they take it */
 .inv-zone[data-armed] {
@@ -313,14 +329,12 @@ html:is([data-nk-motion="reduced"], [data-nk-motion="off"]) .inv-slot[data-lande
   width: 7rem;
   border: 0;
   text-align: center;
-  font-size: 0.9375rem;
-  font-weight: var(--nk-type-weight-strong);
+  font-size: var(--text-sm);
   box-shadow: none;
 }
 .inv-amount:focus-visible {
   box-shadow: inset 0 0 0 0.125rem var(--ring);
 }
-
 
 /* ───────────────────────────── meters (tooltip durability) */
 
@@ -347,32 +361,12 @@ html:is([data-nk-motion="reduced"], [data-nk-motion="off"]) .inv-slot[data-lande
   background-color: var(--destructive);
 }
 
-/* Thin themed scrollbars for the slot grids (Chromium 103 supports ::-webkit-scrollbar). */
-.inv-scroll {
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scrollbar-gutter: stable;
-}
-.inv-scroll::-webkit-scrollbar {
-  width: 0.375rem;
-}
-.inv-scroll::-webkit-scrollbar-track {
-  background: transparent;
-}
-.inv-scroll::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 999px;
-}
-.inv-scroll::-webkit-scrollbar-thumb:hover {
-  background: var(--muted-foreground);
-}
-
 /* Item art: crisp, never draggable, never selectable. */
 .inv-img {
   image-rendering: -webkit-optimize-contrast;
   -webkit-user-drag: none;
   pointer-events: none;
-  filter: drop-shadow(0 0.125rem 0.25rem rgb(0 0 0 / 0.35));
+  filter: drop-shadow(0 0.125rem 0.25rem rgba(var(--scrim-rgb), 0.35));
 }
 
 /* Markdown descriptions */
@@ -385,7 +379,7 @@ html:is([data-nk-motion="reduced"], [data-nk-motion="off"]) .inv-slot[data-lande
   display: none;
 }
 .inv-md p + p {
-  margin-top: 0.25rem;
+  margin-top: var(--nk-space-1);
 }
 .inv-md strong {
   font-weight: var(--nk-type-weight-strong);
@@ -396,20 +390,20 @@ html:is([data-nk-motion="reduced"], [data-nk-motion="off"]) .inv-slot[data-lande
   text-underline-offset: 2px;
 }
 .inv-md code {
-  font-family: var(--font-mono, ui-monospace, monospace);
+  font-family: var(--font-mono);
   font-size: 0.85em;
 }
 .inv-md ul {
   list-style: disc;
-  padding-left: 1rem;
+  padding-left: var(--nk-space-4);
 }
 .inv-md ol {
   list-style: decimal;
-  padding-left: 1rem;
+  padding-left: var(--nk-space-4);
 }
 
 /* ───────────────────────────── on the game: item notes and the hotbar (components/overlays.tsx)
-   The notices' motion (#102): in from the bottom edge on the sheets' ladder (panel time x 2.2, at most
+   The notices' motion: in from the bottom edge on the sheets' ladder (panel time x 2.2, at most
    360ms, ease-out), back out toward it when they end (x 1.4, at most 200ms, ease-in); the notes' flip
    glides the others into the gap. The motion is on the chip, the flip on its wrapper. */
 .inv-note > .nk-chip,
@@ -441,33 +435,23 @@ html[data-nk-motion="off"] :is(.inv-note > .nk-chip, .inv-hotbar) {
 
 /*
  * The item menu (right click on a slot) on the kit's row rhythm: rows a step taller than stock
- * dropdown items (36px at 1080p), the row radius, a little more room around them; the header
- * (the item, lane F's) keeps its own layout.
+ * dropdown items (the control height), the row radius, a little more room around them; the header
+ * (the item) keeps its own layout.
  */
 .inv-menu {
   padding: 0.375rem;
 }
 .inv-menu [data-slot="dropdown-menu-item"] {
-  min-height: 2.25rem;
+  min-height: var(--nk-height-control);
   padding-inline: 0.625rem;
-  border-radius: var(--nk-row-radius, calc(var(--radius) - 4px));
+  border-radius: var(--nk-row-radius);
 }
 
 /* The useful-controls dialog on the sheets' rhythm: section-size title, 1.5rem from the edges. */
 [data-slot="dialog-content"] .nk-panel-header {
   min-height: 0;
-  padding: 1.5rem 1.5rem 1rem;
+  padding: var(--nk-space-6) var(--nk-space-6) var(--nk-space-4);
 }
 [data-slot="dialog-content"] .nk-panel-header .nk-title {
   --nk-panel-title-size: var(--nk-text-section);
 }
-
-/* safe insets: content stays inside the slot's curve (count/badges in the corners, labels fit or clip cleanly) */
-.inv-slot {
-  --inv-inset: max(0.5rem, calc(var(--nk-chip-radius, 0.5rem) * 0.45));
-  padding: var(--inv-inset);
-}
-.inv-slot-label { padding-inline: 0.15rem calc(0.15rem + var(--nk-type-overhang-clip)); } /* a slanted face's overhang + the ellipsis clear the curve */
-/* Use / Give: icon and text on one optical centre (italic scan type leans right) */
-.inv-zone { line-height: 1; padding-inline: 1rem 1.1rem; }
-.inv-zone-icon { align-items: center; flex-shrink: 0; }

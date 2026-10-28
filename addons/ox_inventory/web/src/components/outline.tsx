@@ -1,5 +1,5 @@
-// A level (durability) drawn along a slot tile's own edge, the same way nuikit_hud traces a vital: whatever shape the identity gives chips (a
-// rounded square, a pill, a circle, Signal's chamfered corners), the track and the fill follow that
+// A level (durability) drawn along a slot's own edge, the same way nuikit_hud traces a vital: whatever shape the identity gives chips (a
+// rounded square, a pill, a circle, chamfered corners), the track and the fill follow that
 // outline instead of a ring inside the box. The shape is measured from the chip, not assumed:
 // its corner radius (--nk-chip-radius, resolved by the browser) and, when chips are clipped
 // (--nk-chip-clip), the chamfer of half --nk-shape-cut that the kit's clip draws (top left, bottom right).
@@ -100,7 +100,7 @@ export function SlotOutline({ value }: { value?: number }) {
     update();
     const ro = new ResizeObserver(update);
     ro.observe(face);
-    // the probe too: a tile skipped by content-visibility sizes it only once it comes into view
+    // the probe too: a slot skipped by content-visibility sizes it only once it comes into view
     if (probe.current) ro.observe(probe.current);
     const off = onTheme(() => requestAnimationFrame(update));
     // a theme applied another way (devtools, the host) lands on <html>'s style or class

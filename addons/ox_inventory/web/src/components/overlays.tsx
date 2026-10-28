@@ -1,13 +1,13 @@
 import { flipFrom } from "nuikit-core/motion";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ItemImage } from "@/components/item-image";
-import { SlotTile } from "@/components/slot-tile";
+import { InventorySlot } from "@/components/inventory-slot";
 import { t } from "@/lib/locale";
 import { useOx } from "@/lib/nui";
 import type { Slot } from "@/lib/types";
 import { inv, itemImage, itemLabel } from "@/state/inventory";
 import { onPointerMove, pointer, ui } from "@/state/ui";
-import { SlotCount } from "@/components/slot-tile";
+import { SlotCount } from "@/components/inventory-slot";
 
 /** The item under the cursor while dragging. Positioned straight on the node, no re-render per move. */
 export function DragPreview() {
@@ -20,7 +20,7 @@ export function DragPreview() {
     if (!drag) return;
     const place = () => {
       // centred on the cursor: it covers the slot it would land in, so the target's ring frames it instead of
-      // reading as a second tile beside it
+      // reading as a second slot beside it
       if (ref.current) ref.current.style.transform = `translate3d(${pointer.x}px, ${pointer.y}px, 0) translate(-50%, -50%)`;
     };
     place();
@@ -78,7 +78,7 @@ export function Hotbar() {
       <div className="inv-hotbar flex gap-2" data-leaving={!visible || undefined}>
         {slots.map((s) => (
           <div key={s.slot} className="w-[4.5rem]">
-            <SlotTile side="left" item={s} invType="player" display imagepath={imagepath} rev={rev} />
+            <InventorySlot side="left" item={s} invType="player" display imagepath={imagepath} rev={rev} />
           </div>
         ))}
       </div>
@@ -112,7 +112,7 @@ export function ItemNotifications() {
 
   if (!notes.length) return null;
   return (
-    // Above the hotbar's row (edge + 4.5rem tile + 0.75rem), newest at the bottom.
+    // Above the hotbar's row (edge + 4.5rem slot + 0.75rem), newest at the bottom.
     <div ref={stack} className="nk-edge pointer-events-none fixed inset-x-0 bottom-[calc(var(--nk-screen-edge)+5.25rem)] flex flex-col items-center gap-2">
       {notes.map((n) => (
         // the flip moves the wrapper, the enter and exit move the chip: the two transforms never fight
