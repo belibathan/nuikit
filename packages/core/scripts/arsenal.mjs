@@ -10,7 +10,7 @@ import { createRequire } from "node:module";
 import { existsSync, mkdirSync, readdirSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
-const root = fileURLToPath(new URL("..", import.meta.url));
+const root = fileURLToPath(new URL("..", import.meta.url)).replaceAll("\\", "/"); // forward slashes: TypeScript reports file names that way on Windows too
 const repo = fileURLToPath(new URL("../../..", import.meta.url));
 const require = createRequire(import.meta.url);
 const check = process.argv.includes("--check");

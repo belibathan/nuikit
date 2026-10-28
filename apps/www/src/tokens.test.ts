@@ -40,3 +40,21 @@ describe("site tokens", () => {
     }
   });
 });
+
+describe("in-repo UIs see the registry (scripts/sync-template.mjs)", () => {
+  it("every system and addon index.css names registry/nuikit and vendor/shadcn as Tailwind sources", async () => {
+    const fs = await import("node:fs");
+    const path = await import("node:path");
+    const root = path.resolve(__dirname, "../../..");
+    let n = 0;
+    for (const group of ["systems", "addons"])
+      for (const name of fs.readdirSync(path.join(root, group))) {
+        const f = path.join(root, group, name, "web/src/index.css");
+        if (!fs.existsSync(f)) continue;
+        const css = fs.readFileSync(f, "utf8");
+        for (const src of ["registry/nuikit/ui", "registry/nuikit/blocks", "vendor/shadcn/ui"]) expect(css, `${group}/${name}`).toContain(`${src}";`);
+        n++;
+      }
+    expect(n).toBeGreaterThan(10);
+  });
+});

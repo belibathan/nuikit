@@ -3,6 +3,10 @@
    them: kit defaults and primitives under the utilities, a theme (nk.theme) and the page (nk.app) over them. */
 @layer theme, base, nk.base, nk.layout, components, nk.kit, utilities, nk.theme, nk.app;
 @import "tailwindcss";
+@source "../../../../registry/nuikit/ui";
+@source "../../../../registry/nuikit/blocks";
+@source "../../../../registry/nuikit/lib";
+@source "../../../../vendor/shadcn/ui";
 /* shadcn's enter/exit animations (data-[state=open]:animate-in …): every page ships them. */
 @import "tw-animate-css";
 

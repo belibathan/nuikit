@@ -32,6 +32,9 @@ jobs:
             git diff --stat | tail -1
             exit 1
           fi
+      # In-repo UIs import the registry from outside web/: their built CSS must carry the registry's classes.
+      - name: Registry classes in every built UI
+        run: node scripts/check-built-classes.mjs
       # The arsenal (packages/core/src/spec/api) is the source: its generated files (arsenal.json, src/domains,
       # lua/api.lua, src/events.generated.ts, package.json exports) must be what the spec makes.
       - name: Arsenal generated from the spec

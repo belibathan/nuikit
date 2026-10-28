@@ -268,7 +268,14 @@ for (const t of targets) {
   if (missing.length) console.warn(`  ! ${t.dir}/web/package.json is missing: ${missing.join(", ")}`);
   if (t.compiler) copy("packages/core/dist/fxserver-compiler.js", "server/compiler.js");
   if (t.css !== false) {
-    const css = cssFor(fontMode, t.surface);
+    let css = cssFor(fontMode, t.surface);
+    // in-repo UIs import components from outside web/, where Tailwind's automatic detection never looks:
+    // name those sources, or every class only a registry/vendor component uses is missing from the build
+    if (!copies) {
+      const rel = (p) => path.relative(path.join(root, t.dir, "web/src"), path.join(root, p)).replaceAll("\\", "/");
+      const sources = ["registry/nuikit/ui", "registry/nuikit/blocks", "registry/nuikit/lib", "vendor/shadcn/ui"].map((p) => `@source "${rel(p)}";`).join("\n");
+      css = css.replace('@import "tailwindcss";', `@import "tailwindcss";\n${sources}`);
+    }
     fs.writeFileSync(path.join(root, t.dir, "web/src/index.css"), headers ? HEADERS[".css"]("packages/create-nuikit/index.css.tpl or kit.css") + css : css);
     written.add("web/src/index.css");
   }
