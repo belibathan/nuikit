@@ -1831,7 +1831,7 @@
     "key": {
       "$type": "dimension",
       "$value": "max(0.25rem, calc(var(--radius) - 0.5rem))",
-      "$description": "Keys and small tiles",
+      "$description": "Keys and small glyphs",
       "$extensions": {
         "nuikit": {
           "tier": "identity",
@@ -1885,7 +1885,7 @@
     "key": {
       "$type": "dimension",
       "$value": "1.5rem",
-      "$description": "A key / small tile",
+      "$description": "A key / small glyph",
       "$extensions": {
         "nuikit": {
           "tier": "identity",
@@ -1898,7 +1898,7 @@
     "chip": {
       "$type": "dimension",
       "$value": "calc(1.75rem * var(--nk-density))",
-      "$description": "A chip / medium tile",
+      "$description": "A chip / medium glyph",
       "$extensions": {
         "nuikit": {
           "tier": "identity",
@@ -1911,7 +1911,7 @@
     "control": {
       "$type": "dimension",
       "$value": "2.25rem",
-      "$description": "Buttons and bar items / large tile",
+      "$description": "Buttons and bar items / large glyph",
       "$extensions": {
         "nuikit": {
           "tier": "identity",
@@ -3707,7 +3707,7 @@
     "base": {
       "$type": "duration",
       "$value": "180ms",
-      "$description": "Panel enter, the selection tile, tab switch (d)",
+      "$description": "Panel enter, the selection, tab switch (d)",
       "$extensions": {
         "nuikit": {
           "tier": "semantic",
@@ -3721,7 +3721,7 @@
     "slow": {
       "$type": "duration",
       "$value": "280ms",
-      "$description": "Sheets, dialogs, a tile landing, toasts, a confirm pop (1.556d)",
+      "$description": "Sheets, dialogs, a glyph landing, toasts, a confirm pop (1.556d)",
       "$extensions": {
         "nuikit": {
           "tier": "semantic",
@@ -3805,7 +3805,7 @@
     "move": {
       "$type": "cubicBezier",
       "$value": "{motion.ease}",
-      "$description": "On-screen moves: the selection tile, FLIP, a tab underline",
+      "$description": "On-screen moves: the selection, FLIP, a tab underline",
       "$extensions": {
         "nuikit": {
           "tier": "semantic",
@@ -3971,7 +3971,7 @@
     "land": {
       "$type": "number",
       "$value": "0.6",
-      "$description": "The scale a tile lands from",
+      "$description": "The scale a glyph lands from",
       "$extensions": {
         "nuikit": {
           "tier": "semantic",
@@ -4184,7 +4184,7 @@
     "paint": {
       "$type": "color",
       "$value": "{palette.brand}",
-      "$description": "An active tile's face, the speedometer's level, the compass N (a colour or a gradient)",
+      "$description": "An active glyph's face, the speedometer's level, the compass N (a colour or a gradient)",
       "$extensions": {
         "nuikit": {
           "tier": "semantic",
@@ -4330,7 +4330,7 @@
     },
     "clip-sm": {
       "$value": "none",
-      "$description": "clip-path of chips, tiles and buttons: half the chamfer",
+      "$description": "clip-path of chips, glyphs and buttons: half the chamfer",
       "$extensions": {
         "nuikit": {
           "tier": "semantic",
@@ -4788,7 +4788,7 @@
       "press": {
         "$type": "dimension",
         "$value": "1px",
-        "$description": "How far a held tile presses toward its plate",
+        "$description": "How far a held glyph presses toward its plate",
         "$extensions": {
           "nuikit": {
             "tier": "component",
@@ -5005,7 +5005,7 @@
       "active": {
         "$type": "color",
         "$value": "{accent.paint}",
-        "$description": "The face of an active tile (the mic while talking, N on the compass, a checked box)",
+        "$description": "The face of an active glyph (the mic while talking, N on the compass, a checked box)",
         "$extensions": {
           "nuikit": {
             "tier": "component",
@@ -5095,7 +5095,7 @@
       "gap": {
         "$type": "dimension",
         "$value": "{space.1}",
-        "$description": "Between a tile's glyphs",
+        "$description": "Between a glyph's characters",
         "$extensions": {
           "nuikit": {
             "tier": "component",
@@ -5125,7 +5125,7 @@
       "delay": {
         "$type": "duration",
         "$value": "80ms",
-        "$description": "The tag opens this long after the tile lands",
+        "$description": "The tag opens this long after the glyph lands",
         "$extensions": {
           "nuikit": {
             "tier": "component",
@@ -5215,7 +5215,7 @@
       "inset": {
         "$type": "dimension",
         "$value": "0.375rem",
-        "$description": "How far a selection tile sits in from its item's sides (room for the skew)",
+        "$description": "How far the selection sits in from its item's sides (room for the skew)",
         "$extensions": {
           "nuikit": {
             "tier": "component",
@@ -5261,7 +5261,7 @@
       "overhang": {
         "$type": "dimension",
         "$value": "0.25rem",
-        "$description": "How far a row's selection tile reaches past its text",
+        "$description": "How far a row's selection reaches past its text",
         "$extensions": {
           "nuikit": {
             "tier": "component",
@@ -5783,7 +5783,7 @@
     "gap": {
       "$type": "dimension",
       "$value": "{space.4}",
-      "$description": "Between the icon tile, the text and the trail",
+      "$description": "Between the icon, the text and the trail",
       "$extensions": {
         "nuikit": {
           "tier": "component",
@@ -5823,7 +5823,7 @@
       "box": {
         "$type": "dimension",
         "$value": "2rem",
-        "$description": "The icon tile beside the title (the icon inside is icon.md)",
+        "$description": "The icon box beside the title (the icon inside is icon.md)",
         "$extensions": {
           "nuikit": {
             "tier": "component",
@@ -5963,7 +5963,7 @@
     "time": {
       "$type": "duration",
       "$value": "{time.base}",
-      "$description": "How long the tile glides",
+      "$description": "How long the selection glides",
       "$extensions": {
         "nuikit": {
           "tier": "component",
@@ -7419,7 +7419,7 @@
       "box": {
         "$type": "dimension",
         "$value": "2.5rem",
-        "$description": "The icon's box (panel size, no tile)",
+        "$description": "The icon's box (panel size, no glyph)",
         "$extensions": {
           "nuikit": {
             "tier": "component",
@@ -7433,7 +7433,7 @@
       "box-screen": {
         "$type": "dimension",
         "$value": "3rem",
-        "$description": "The icon's box (screen size, no tile)",
+        "$description": "The icon's box (screen size, no glyph)",
         "$extensions": {
           "nuikit": {
             "tier": "component",
@@ -7873,7 +7873,7 @@
       "gap": {
         "$type": "dimension",
         "$value": "{list.gap}",
-        "$description": "Between triggers: a lit tile never touches its neighbour",
+        "$description": "Between triggers: the selection never touches its neighbour",
         "$extensions": {
           "nuikit": {
             "tier": "component",
@@ -7887,7 +7887,7 @@
       "rest": {
         "$type": "dimension",
         "$value": "3px",
-        "$description": "Room under the triggers besides the tile's wall",
+        "$description": "Room under the triggers besides the selection's wall",
         "$extensions": {
           "nuikit": {
             "tier": "component",
@@ -7947,7 +7947,7 @@
     "square-size": {
       "$type": "dimension",
       "$value": "3rem",
-      "$description": "A tile chip's box",
+      "$description": "A square chip's box",
       "$extensions": {
         "nuikit": {
           "tier": "component",
@@ -7986,7 +7986,7 @@
     "hud-radius": {
       "$type": "dimension",
       "$value": "max(0.25rem, calc(var(--radius) - 0.125rem))",
-      "$description": "A square HUD tile's radius (hotbar, target eye)",
+      "$description": "A square HUD chip's radius (hotbar, target eye)",
       "$extensions": {
         "nuikit": {
           "tier": "component",
@@ -8129,7 +8129,7 @@
       "size-square": {
         "$type": "dimension",
         "$value": "1.25rem",
-        "$description": "A tile chip's icon",
+        "$description": "A square chip's icon",
         "$extensions": {
           "nuikit": {
             "tier": "component",
@@ -8904,7 +8904,7 @@
       "size": {
         "$type": "dimension",
         "$value": "calc(var(--nk-slab-height) - var(--nk-space-unit) * 2)",
-        "$description": "The icon tile's size",
+        "$description": "The icon box's size",
         "$extensions": {
           "nuikit": {
             "tier": "component",
@@ -8918,7 +8918,7 @@
       "bg": {
         "$type": "color",
         "$value": "rgba(var(--hud-foreground-rgb), 0.1)",
-        "$description": "The icon tile",
+        "$description": "The icon box",
         "$extensions": {
           "nuikit": {
             "tier": "component",
@@ -8946,7 +8946,7 @@
       "radius": {
         "$type": "dimension",
         "$value": "max(0.125rem, calc(var(--nk-slab-radius) - var(--nk-space-unit)))",
-        "$description": "The icon tile's radius",
+        "$description": "The icon box's radius",
         "$extensions": {
           "nuikit": {
             "tier": "component",

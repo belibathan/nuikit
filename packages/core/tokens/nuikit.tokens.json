@@ -986,7 +986,7 @@
         "value": 1.5,
         "unit": "rem"
       },
-      "$description": "A key / small tile"
+      "$description": "A key / small glyph"
     },
     "height-control": {
       "$type": "dimension",
@@ -994,7 +994,7 @@
         "value": 2.25,
         "unit": "rem"
       },
-      "$description": "Buttons and bar items / large tile"
+      "$description": "Buttons and bar items / large glyph"
     },
     "height-field": {
       "$type": "dimension",

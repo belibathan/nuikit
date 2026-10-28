@@ -1430,7 +1430,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "radius",
     "type": "length",
     "default": "max(0.25rem, calc(var(--radius) - 0.5rem))",
-    "description": "Keys and small tiles"
+    "description": "Keys and small glyphs"
   },
   {
     "name": "nk-radius-chip",
@@ -1466,7 +1466,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "height",
     "type": "length",
     "default": "1.5rem",
-    "description": "A key / small tile"
+    "description": "A key / small glyph"
   },
   {
     "name": "nk-height-chip",
@@ -1475,7 +1475,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "height",
     "type": "length",
     "default": "calc(1.75rem * var(--nk-density))",
-    "description": "A chip / medium tile"
+    "description": "A chip / medium glyph"
   },
   {
     "name": "nk-height-control",
@@ -1484,7 +1484,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "height",
     "type": "length",
     "default": "2.25rem",
-    "description": "Buttons and bar items / large tile"
+    "description": "Buttons and bar items / large glyph"
   },
   {
     "name": "nk-height-row",
@@ -2833,7 +2833,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "time",
     "type": "time",
     "default": "180ms",
-    "description": "Panel enter, the selection tile, tab switch (d)",
+    "description": "Panel enter, the selection, tab switch (d)",
     "derived": true,
     "rule": "motion.duration"
   },
@@ -2844,7 +2844,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "time",
     "type": "time",
     "default": "280ms",
-    "description": "Sheets, dialogs, a tile landing, toasts, a confirm pop (1.556d)",
+    "description": "Sheets, dialogs, a glyph landing, toasts, a confirm pop (1.556d)",
     "derived": true,
     "rule": "1.556 × motion.duration"
   },
@@ -2906,7 +2906,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "ease",
     "type": "ease",
     "default": "var(--nk-motion-ease)",
-    "description": "On-screen moves: the selection tile, FLIP, a tab underline"
+    "description": "On-screen moves: the selection, FLIP, a tab underline"
   },
   {
     "name": "nk-ease-expand",
@@ -3026,7 +3026,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "gesture",
     "type": "number",
     "default": "0.6",
-    "description": "The scale a tile lands from",
+    "description": "The scale a glyph lands from",
     "range": [
       0,
       1
@@ -3173,7 +3173,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "accent",
     "type": "paint",
     "default": "var(--brand)",
-    "description": "An active tile's face, the speedometer's level, the compass N (a colour or a gradient)"
+    "description": "An active glyph's face, the speedometer's level, the compass N (a colour or a gradient)"
   },
   {
     "name": "nk-accent-from",
@@ -3273,7 +3273,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "line",
     "type": "string",
     "default": "none",
-    "description": "clip-path of chips, tiles and buttons: half the chamfer",
+    "description": "clip-path of chips, glyphs and buttons: half the chamfer",
     "derived": true
   },
   {
@@ -3588,7 +3588,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "control",
     "type": "length",
     "default": "1px",
-    "description": "How far a held tile presses toward its plate",
+    "description": "How far a held glyph presses toward its plate",
     "part": "plate"
   },
   {
@@ -3742,7 +3742,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "control",
     "type": "paint",
     "default": "var(--nk-accent-paint)",
-    "description": "The face of an active tile (the mic while talking, N on the compass, a checked box)",
+    "description": "The face of an active glyph (the mic while talking, N on the compass, a checked box)",
     "part": "face"
   },
   {
@@ -3806,7 +3806,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "control",
     "type": "length",
     "default": "var(--nk-space-1)",
-    "description": "Between a tile's glyphs",
+    "description": "Between a glyph's characters",
     "part": "legend"
   },
   {
@@ -3826,7 +3826,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "control",
     "type": "time",
     "default": "80ms",
-    "description": "The tag opens this long after the tile lands",
+    "description": "The tag opens this long after the glyph lands",
     "part": "tag"
   },
   {
@@ -3890,7 +3890,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "control",
     "type": "length",
     "default": "0.375rem",
-    "description": "How far a selection tile sits in from its item's sides (room for the skew)",
+    "description": "How far the selection sits in from its item's sides (room for the skew)",
     "part": "primary"
   },
   {
@@ -3924,7 +3924,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "control",
     "type": "length",
     "default": "0.25rem",
-    "description": "How far a row's selection tile reaches past its text",
+    "description": "How far a row's selection reaches past its text",
     "part": "primary"
   },
   {
@@ -4285,7 +4285,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "row",
     "type": "length",
     "default": "var(--nk-space-4)",
-    "description": "Between the icon tile, the text and the trail"
+    "description": "Between the icon, the text and the trail"
   },
   {
     "name": "nk-row-font-size",
@@ -4312,7 +4312,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "row",
     "type": "length",
     "default": "2rem",
-    "description": "The icon tile beside the title (the icon inside is icon.md)",
+    "description": "The icon box beside the title (the icon inside is icon.md)",
     "part": "icon"
   },
   {
@@ -4399,7 +4399,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "selection",
     "type": "time",
     "default": "var(--nk-time-base)",
-    "description": "How long the tile glides"
+    "description": "How long the selection glides"
   },
   {
     "name": "nk-selection-ease",
@@ -5403,7 +5403,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "empty-state",
     "type": "length",
     "default": "2.5rem",
-    "description": "The icon's box (panel size, no tile)",
+    "description": "The icon's box (panel size, no glyph)",
     "part": "icon"
   },
   {
@@ -5413,7 +5413,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "empty-state",
     "type": "length",
     "default": "3rem",
-    "description": "The icon's box (screen size, no tile)",
+    "description": "The icon's box (screen size, no glyph)",
     "part": "icon"
   },
   {
@@ -5715,7 +5715,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "selection-tabs",
     "type": "length",
     "default": "var(--nk-list-gap)",
-    "description": "Between triggers: a lit tile never touches its neighbour",
+    "description": "Between triggers: the selection never touches its neighbour",
     "part": "list"
   },
   {
@@ -5725,7 +5725,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "selection-tabs",
     "type": "length",
     "default": "3px",
-    "description": "Room under the triggers besides the tile's wall",
+    "description": "Room under the triggers besides the selection's wall",
     "part": "list"
   },
   {
@@ -5764,7 +5764,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "chip",
     "type": "length",
     "default": "3rem",
-    "description": "A tile chip's box"
+    "description": "A square chip's box"
   },
   {
     "name": "nk-chip-padding",
@@ -5791,7 +5791,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "chip",
     "type": "length",
     "default": "max(0.25rem, calc(var(--radius) - 0.125rem))",
-    "description": "A square HUD tile's radius (hotbar, target eye)"
+    "description": "A square HUD chip's radius (hotbar, target eye)"
   },
   {
     "name": "nk-chip-bg",
@@ -5891,7 +5891,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "chip",
     "type": "length",
     "default": "1.25rem",
-    "description": "A tile chip's icon",
+    "description": "A square chip's icon",
     "part": "icon"
   },
   {
@@ -6411,7 +6411,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "slab",
     "type": "length",
     "default": "calc(var(--nk-slab-height) - var(--nk-space-unit) * 2)",
-    "description": "The icon tile's size",
+    "description": "The icon box's size",
     "part": "icon"
   },
   {
@@ -6421,7 +6421,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "slab",
     "type": "color",
     "default": "rgba(var(--hud-foreground-rgb), 0.1)",
-    "description": "The icon tile",
+    "description": "The icon box",
     "part": "icon"
   },
   {
@@ -6441,7 +6441,7 @@ export const LEVER_ROWS: readonly LeverRow[] = [
     "scope": "slab",
     "type": "length",
     "default": "max(0.125rem, calc(var(--nk-slab-radius) - var(--nk-space-unit)))",
-    "description": "The icon tile's radius",
+    "description": "The icon box's radius",
     "part": "icon"
   },
   {

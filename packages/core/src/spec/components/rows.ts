@@ -2,7 +2,7 @@
 import { alpha, color, css, length, number, pal, ref, shadow, string, time, type ComponentDef } from "../lang";
 
 export const row: ComponentDef = {
-  description: "The list row (nk-row): generous padding, an icon tile column, two voices; lit on the keycap Glyph",
+  description: "The list row (nk-row): generous padding, an icon column, two voices; lit on the control face",
   inherits: ["control"],
   anatomy: ["icon", "title", "description", "trail", "bar"],
   levers: {
@@ -12,12 +12,12 @@ export const row: ComponentDef = {
     "pad-y": length(ref("space.2"), "Block padding", { was: ["nk-row-pad-y"] }),
     "pad-x": length(ref("space.3"), "Inline padding", { was: ["nk-row-pad-x"] }),
     padding: string(css`${ref("row.pad-y")} ${ref("row.pad-x")}`, "Both paddings", { was: ["nk-row-padding"] }),
-    gap: length(ref("space.4"), "Between the icon tile, the text and the trail", { was: ["nk-row-gap"] }),
+    gap: length(ref("space.4"), "Between the icon, the text and the trail", { was: ["nk-row-gap"] }),
     "font-size": length(ref("text.base"), "The row's text size", { was: ["nk-row-font-size"] }),
     accent: color(pal("brand"), "The colour that marks the active row or slot (an outline, a hold ring)", { was: ["nk-row-indicator-color"] }),
   },
   parts: {
-    icon: { box: length("2rem", "The icon tile beside the title (the icon inside is icon.md)", { floor: true, was: ["nk-row-icon-box"] }) },
+    icon: { box: length("2rem", "The icon box beside the title (the icon inside is icon.md)", { floor: true, was: ["nk-row-icon-box"] }) },
     bar: {
       width: length("0.1875rem", "The focus bar's width (style.focus: bar)", { floor: true, was: ["nk-row-bar-width", "nk-row-bar-thickness"] }),
     },
@@ -25,7 +25,7 @@ export const row: ComponentDef = {
 };
 
 export const list: ComponentDef = {
-  description: "A list of selectable items (nk-list, MenuRowList): items a gap apart so a lit tile never touches its neighbour",
+  description: "A list of selectable items (nk-list, MenuRowList): items a gap apart so a lit selection never touches its neighbour",
   inherits: ["control"],
   anatomy: ["item"],
   levers: {
@@ -48,11 +48,11 @@ export const menuRow: ComponentDef = {
 };
 
 export const selection: ComponentDef = {
-  description: "The one sliding selection tile per list (nk-indicator, Selection)",
+  description: "The one sliding selection per list (nk-indicator, Selection)",
   inherits: ["control"],
   anatomy: ["glyph"],
   levers: {
-    time: time(ref("time.base"), "How long the tile glides", { was: ["nk-indicator-time"] }),
+    time: time(ref("time.base"), "How long the selection glides", { was: ["nk-indicator-time"] }),
     ease: string(ref("ease.move"), "The glide's curve", { was: ["nk-indicator-ease"] }),
   },
 };

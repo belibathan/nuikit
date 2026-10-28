@@ -2,14 +2,14 @@
 import { alpha, color, css, length, number, pal, ref, shadow, string, type ComponentDef } from "../lang";
 
 export const chip: ComponentDef = {
-  description: "Always-on HUD chips and tiles on the game (nk-chip, nk-hud)",
+  description: "Always-on HUD chips and squares on the game (nk-chip, nk-hud)",
   anatomy: ["icon", "count"],
   levers: {
     height: length(ref("height.chip"), "Height", { was: ["nk-chip-height"] }),
-    "square-size": length("3rem", "A tile chip's box", { floor: true }),
+    "square-size": length("3rem", "A square chip's box", { floor: true }),
     padding: length(css`calc(${ref("space.unit")} * 2.5)`, "Inline padding", { was: ["nk-chip-padding"] }),
     radius: length(ref("radius.chip"), "Radius", { was: ["nk-chip-radius"] }),
-    "hud-radius": length(css`max(0.25rem, calc(${pal("radius")} - 0.125rem))`, "A square HUD tile's radius (hotbar, target eye)", { was: ["nk-hud-radius"] }),
+    "hud-radius": length(css`max(0.25rem, calc(${pal("radius")} - 0.125rem))`, "A square HUD chip's radius (hotbar, target eye)", { was: ["nk-hud-radius"] }),
     bg: color(css`rgba(${pal("hud", "rgb")}, max(${pal("hud", "a")}, ${ref("alpha.hud")}))`, "The plate on the game", { was: ["nk-chip-bg"] }),
     fg: color(pal("hud-foreground"), "Text and icons", { was: ["nk-chip-fg", "nk-chip-foreground"] }),
     "font-size": length("0.875rem", "Text size", { floor: true, was: ["nk-chip-font-size"] }),
@@ -20,7 +20,7 @@ export const chip: ComponentDef = {
     clip: string(ref("line.clip-sm"), "The chip's clip-path", { was: ["nk-chip-clip"] }),
     "text-shadow": shadow(ref("depth.text"), "Text drawn on the game", { was: ["nk-hud-text-shadow"] }),
   },
-  parts: { icon: { size: length("0.875rem", "A pill chip's icon", { floor: true }), "size-square": length("1.25rem", "A tile chip's icon", { floor: true }) } },
+  parts: { icon: { size: length("0.875rem", "A pill chip's icon", { floor: true }), "size-square": length("1.25rem", "A square chip's icon", { floor: true }) } },
   state: {
     tone: { type: "color", description: "A chip's tone", was: ["nk-chip-tone"] },
     "tone-rgb": { type: "string", description: "A chip's tone channels", was: ["nk-chip-tone-rgb"] },
@@ -138,10 +138,10 @@ export const slab: ComponentDef = {
   },
   parts: {
     icon: {
-      size: length(css`calc(${ref("slab.height")} - ${ref("space.unit")} * 2)`, "The icon tile's size", { was: ["nk-slab-icon-size"] }),
-      bg: color(alpha("hud-foreground", 0.1), "The icon tile", { was: ["nk-slab-icon-bg"] }),
+      size: length(css`calc(${ref("slab.height")} - ${ref("space.unit")} * 2)`, "The icon box's size", { was: ["nk-slab-icon-size"] }),
+      bg: color(alpha("hud-foreground", 0.1), "The icon box", { was: ["nk-slab-icon-bg"] }),
       fg: color(ref("slab.fg"), "The icon", { was: ["nk-slab-icon-fg"] }),
-      radius: length(css`max(0.125rem, calc(${ref("slab.radius")} - ${ref("space.unit")}))`, "The icon tile's radius", { was: ["nk-slab-icon-radius"] }),
+      radius: length(css`max(0.125rem, calc(${ref("slab.radius")} - ${ref("space.unit")}))`, "The icon box's radius", { was: ["nk-slab-icon-radius"] }),
     },
     delta: {
       font: string(ref("type.num.family"), "A delta's face", { was: ["nk-slab-delta-font"] }),

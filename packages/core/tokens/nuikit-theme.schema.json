@@ -961,7 +961,7 @@
         },
         "nk-radius-key": {
           "type": "string",
-          "description": "Keys and small tiles",
+          "description": "Keys and small glyphs",
           "$comment": "identity · radius.key"
         },
         "nk-radius-chip": {
@@ -981,17 +981,17 @@
         },
         "nk-height-key": {
           "type": "string",
-          "description": "A key / small tile",
+          "description": "A key / small glyph",
           "$comment": "identity · height.key"
         },
         "nk-height-chip": {
           "type": "string",
-          "description": "A chip / medium tile",
+          "description": "A chip / medium glyph",
           "$comment": "identity · height.chip"
         },
         "nk-height-control": {
           "type": "string",
-          "description": "Buttons and bar items / large tile",
+          "description": "Buttons and bar items / large glyph",
           "$comment": "identity · height.control"
         },
         "nk-height-row": {
@@ -1674,12 +1674,12 @@
         },
         "nk-time-base": {
           "type": "string",
-          "description": "Panel enter, the selection tile, tab switch (d)",
+          "description": "Panel enter, the selection, tab switch (d)",
           "$comment": "semantic · time.base"
         },
         "nk-time-slow": {
           "type": "string",
-          "description": "Sheets, dialogs, a tile landing, toasts, a confirm pop (1.556d)",
+          "description": "Sheets, dialogs, a glyph landing, toasts, a confirm pop (1.556d)",
           "$comment": "semantic · time.slow"
         },
         "nk-time-fill": {
@@ -1709,7 +1709,7 @@
         },
         "nk-ease-move": {
           "type": "string",
-          "description": "On-screen moves: the selection tile, FLIP, a tab underline",
+          "description": "On-screen moves: the selection, FLIP, a tab underline",
           "$comment": "semantic · ease.move"
         },
         "nk-ease-expand": {
@@ -1770,7 +1770,7 @@
         "nk-gesture-land": {
           "type": "string",
           "pattern": "^-?\\d+(\\.\\d+)?$",
-          "description": "The scale a tile lands from",
+          "description": "The scale a glyph lands from",
           "$comment": "semantic · gesture.land"
         },
         "nk-gesture-deny": {
@@ -1855,7 +1855,7 @@
         },
         "nk-accent-paint": {
           "type": "string",
-          "description": "An active tile's face, the speedometer's level, the compass N (a colour or a gradient)",
+          "description": "An active glyph's face, the speedometer's level, the compass N (a colour or a gradient)",
           "$comment": "semantic · accent.paint"
         },
         "nk-accent-from": {
@@ -1914,7 +1914,7 @@
         },
         "nk-line-clip-sm": {
           "type": "string",
-          "description": "clip-path of chips, tiles and buttons: half the chamfer",
+          "description": "clip-path of chips, glyphs and buttons: half the chamfer",
           "$comment": "semantic · line.clip-sm"
         },
         "nk-line-glow": {
@@ -2083,7 +2083,7 @@
         },
         "nk-control-plate-press": {
           "type": "string",
-          "description": "How far a held tile presses toward its plate",
+          "description": "How far a held glyph presses toward its plate",
           "$comment": "component · control.plate.press"
         },
         "nk-control-wall-height": {
@@ -2167,7 +2167,7 @@
         },
         "nk-control-face-active": {
           "type": "string",
-          "description": "The face of an active tile (the mic while talking, N on the compass, a checked box)",
+          "description": "The face of an active glyph (the mic while talking, N on the compass, a checked box)",
           "$comment": "component · control.face.active"
         },
         "nk-control-face-hold": {
@@ -2199,7 +2199,7 @@
         },
         "nk-control-legend-gap": {
           "type": "string",
-          "description": "Between a tile's glyphs",
+          "description": "Between a glyph's characters",
           "$comment": "component · control.legend.gap"
         },
         "nk-control-legend-inset": {
@@ -2209,7 +2209,7 @@
         },
         "nk-control-tag-delay": {
           "type": "string",
-          "description": "The tag opens this long after the tile lands",
+          "description": "The tag opens this long after the glyph lands",
           "$comment": "component · control.tag.delay"
         },
         "nk-control-primary-color": {
@@ -2243,7 +2243,7 @@
         },
         "nk-control-primary-inset": {
           "type": "string",
-          "description": "How far a selection tile sits in from its item's sides (room for the skew)",
+          "description": "How far the selection sits in from its item's sides (room for the skew)",
           "$comment": "component · control.primary.inset"
         },
         "nk-control-primary-lift": {
@@ -2259,7 +2259,7 @@
         },
         "nk-control-primary-overhang": {
           "type": "string",
-          "description": "How far a row's selection tile reaches past its text",
+          "description": "How far a row's selection reaches past its text",
           "$comment": "component · control.primary.overhang"
         },
         "nk-panel-bg": {
@@ -2458,7 +2458,7 @@
         },
         "nk-row-gap": {
           "type": "string",
-          "description": "Between the icon tile, the text and the trail",
+          "description": "Between the icon, the text and the trail",
           "$comment": "component · row.gap"
         },
         "nk-row-font-size": {
@@ -2474,7 +2474,7 @@
         },
         "nk-row-icon-box": {
           "type": "string",
-          "description": "The icon tile beside the title (the icon inside is icon.md)",
+          "description": "The icon box beside the title (the icon inside is icon.md)",
           "$comment": "component · row.icon.box"
         },
         "nk-row-bar-width": {
@@ -2519,7 +2519,7 @@
         },
         "nk-selection-time": {
           "type": "string",
-          "description": "How long the tile glides",
+          "description": "How long the selection glides",
           "$comment": "component · selection.time"
         },
         "nk-selection-ease": {
@@ -3037,12 +3037,12 @@
         },
         "nk-empty-state-icon-box": {
           "type": "string",
-          "description": "The icon's box (panel size, no tile)",
+          "description": "The icon's box (panel size, no glyph)",
           "$comment": "component · empty-state.icon.box"
         },
         "nk-empty-state-icon-box-screen": {
           "type": "string",
-          "description": "The icon's box (screen size, no tile)",
+          "description": "The icon's box (screen size, no glyph)",
           "$comment": "component · empty-state.icon.box-screen"
         },
         "nk-empty-state-icon-glyph": {
@@ -3191,12 +3191,12 @@
         },
         "nk-selection-tabs-list-gap": {
           "type": "string",
-          "description": "Between triggers: a lit tile never touches its neighbour",
+          "description": "Between triggers: the selection never touches its neighbour",
           "$comment": "component · selection-tabs.list.gap"
         },
         "nk-selection-tabs-list-rest": {
           "type": "string",
-          "description": "Room under the triggers besides the tile's wall",
+          "description": "Room under the triggers besides the selection's wall",
           "$comment": "component · selection-tabs.list.rest"
         },
         "nk-selection-tabs-trigger-height": {
@@ -3216,7 +3216,7 @@
         },
         "nk-chip-square-size": {
           "type": "string",
-          "description": "A tile chip's box",
+          "description": "A square chip's box",
           "$comment": "component · chip.square-size"
         },
         "nk-chip-padding": {
@@ -3231,7 +3231,7 @@
         },
         "nk-chip-hud-radius": {
           "type": "string",
-          "description": "A square HUD tile's radius (hotbar, target eye)",
+          "description": "A square HUD chip's radius (hotbar, target eye)",
           "$comment": "component · chip.hud-radius"
         },
         "nk-chip-bg": {
@@ -3290,7 +3290,7 @@
         },
         "nk-chip-icon-size-square": {
           "type": "string",
-          "description": "A tile chip's icon",
+          "description": "A square chip's icon",
           "$comment": "component · chip.icon.size-square"
         },
         "nk-vital-chip-size": {
@@ -3565,13 +3565,13 @@
         },
         "nk-slab-icon-size": {
           "type": "string",
-          "description": "The icon tile's size",
+          "description": "The icon box's size",
           "$comment": "component · slab.icon.size"
         },
         "nk-slab-icon-bg": {
           "type": "string",
           "pattern": "^rgba?\\(",
-          "description": "The icon tile",
+          "description": "The icon box",
           "$comment": "component · slab.icon.bg"
         },
         "nk-slab-icon-fg": {
@@ -3582,7 +3582,7 @@
         },
         "nk-slab-icon-radius": {
           "type": "string",
-          "description": "The icon tile's radius",
+          "description": "The icon box's radius",
           "$comment": "component · slab.icon.radius"
         },
         "nk-slab-delta-font": {

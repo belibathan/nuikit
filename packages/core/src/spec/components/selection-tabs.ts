@@ -7,8 +7,8 @@ export const selectionTabs: ComponentDef = {
   anatomy: ["list", "trigger"],
   parts: {
     list: {
-      gap: length(ref("list.gap"), "Between triggers: a lit tile never touches its neighbour"),
-      rest: length("3px", "Room under the triggers besides the tile's wall", { floor: true }),
+      gap: length(ref("list.gap"), "Between triggers: the selection never touches its neighbour"),
+      rest: length("3px", "Room under the triggers besides the selection's wall", { floor: true }),
     },
     trigger: {
       height: length(ref("height.chip"), "A trigger's minimum height"),

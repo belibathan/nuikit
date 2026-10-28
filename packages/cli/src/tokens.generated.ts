@@ -808,7 +808,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-radius-key",
     "group": "kit",
     "type": "dimension",
-    "description": "Keys and small tiles"
+    "description": "Keys and small glyphs"
   },
   {
     "name": "nk-radius-chip",
@@ -832,19 +832,19 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-height-key",
     "group": "kit",
     "type": "dimension",
-    "description": "A key / small tile"
+    "description": "A key / small glyph"
   },
   {
     "name": "nk-height-chip",
     "group": "kit",
     "type": "dimension",
-    "description": "A chip / medium tile"
+    "description": "A chip / medium glyph"
   },
   {
     "name": "nk-height-control",
     "group": "kit",
     "type": "dimension",
-    "description": "Buttons and bar items / large tile"
+    "description": "Buttons and bar items / large glyph"
   },
   {
     "name": "nk-height-row",
@@ -1456,13 +1456,13 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-time-base",
     "group": "kit",
     "type": "number",
-    "description": "Panel enter, the selection tile, tab switch (d)"
+    "description": "Panel enter, the selection, tab switch (d)"
   },
   {
     "name": "nk-time-slow",
     "group": "kit",
     "type": "number",
-    "description": "Sheets, dialogs, a tile landing, toasts, a confirm pop (1.556d)"
+    "description": "Sheets, dialogs, a glyph landing, toasts, a confirm pop (1.556d)"
   },
   {
     "name": "nk-time-fill",
@@ -1498,7 +1498,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-ease-move",
     "group": "kit",
     "type": "number",
-    "description": "On-screen moves: the selection tile, FLIP, a tab underline"
+    "description": "On-screen moves: the selection, FLIP, a tab underline"
   },
   {
     "name": "nk-ease-expand",
@@ -1564,7 +1564,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-gesture-land",
     "group": "kit",
     "type": "number",
-    "description": "The scale a tile lands from"
+    "description": "The scale a glyph lands from"
   },
   {
     "name": "nk-gesture-deny",
@@ -1654,7 +1654,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-accent-paint",
     "group": "kit",
     "type": "color",
-    "description": "An active tile's face, the speedometer's level, the compass N (a colour or a gradient)"
+    "description": "An active glyph's face, the speedometer's level, the compass N (a colour or a gradient)"
   },
   {
     "name": "nk-accent-from",
@@ -1720,7 +1720,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-line-clip-sm",
     "group": "kit",
     "type": "number",
-    "description": "clip-path of chips, tiles and buttons: half the chamfer"
+    "description": "clip-path of chips, glyphs and buttons: half the chamfer"
   },
   {
     "name": "nk-line-glow",
@@ -1912,7 +1912,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-control-plate-press",
     "group": "kit",
     "type": "dimension",
-    "description": "How far a held tile presses toward its plate"
+    "description": "How far a held glyph presses toward its plate"
   },
   {
     "name": "nk-control-wall-height",
@@ -2002,7 +2002,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-control-face-active",
     "group": "kit",
     "type": "color",
-    "description": "The face of an active tile (the mic while talking, N on the compass, a checked box)"
+    "description": "The face of an active glyph (the mic while talking, N on the compass, a checked box)"
   },
   {
     "name": "nk-control-face-hold",
@@ -2038,7 +2038,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-control-legend-gap",
     "group": "kit",
     "type": "dimension",
-    "description": "Between a tile's glyphs"
+    "description": "Between a glyph's characters"
   },
   {
     "name": "nk-control-legend-inset",
@@ -2050,7 +2050,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-control-tag-delay",
     "group": "kit",
     "type": "number",
-    "description": "The tag opens this long after the tile lands"
+    "description": "The tag opens this long after the glyph lands"
   },
   {
     "name": "nk-control-primary-color",
@@ -2086,7 +2086,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-control-primary-inset",
     "group": "kit",
     "type": "dimension",
-    "description": "How far a selection tile sits in from its item's sides (room for the skew)"
+    "description": "How far the selection sits in from its item's sides (room for the skew)"
   },
   {
     "name": "nk-control-primary-lift",
@@ -2104,7 +2104,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-control-primary-overhang",
     "group": "kit",
     "type": "dimension",
-    "description": "How far a row's selection tile reaches past its text"
+    "description": "How far a row's selection reaches past its text"
   },
   {
     "name": "nk-panel-bg",
@@ -2338,7 +2338,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-row-gap",
     "group": "kit",
     "type": "dimension",
-    "description": "Between the icon tile, the text and the trail"
+    "description": "Between the icon, the text and the trail"
   },
   {
     "name": "nk-row-font-size",
@@ -2356,7 +2356,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-row-icon-box",
     "group": "kit",
     "type": "dimension",
-    "description": "The icon tile beside the title (the icon inside is icon.md)"
+    "description": "The icon box beside the title (the icon inside is icon.md)"
   },
   {
     "name": "nk-row-bar-width",
@@ -2410,7 +2410,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-selection-time",
     "group": "kit",
     "type": "number",
-    "description": "How long the tile glides"
+    "description": "How long the selection glides"
   },
   {
     "name": "nk-selection-ease",
@@ -3010,13 +3010,13 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-empty-state-icon-box",
     "group": "kit",
     "type": "dimension",
-    "description": "The icon's box (panel size, no tile)"
+    "description": "The icon's box (panel size, no glyph)"
   },
   {
     "name": "nk-empty-state-icon-box-screen",
     "group": "kit",
     "type": "dimension",
-    "description": "The icon's box (screen size, no tile)"
+    "description": "The icon's box (screen size, no glyph)"
   },
   {
     "name": "nk-empty-state-icon-glyph",
@@ -3184,13 +3184,13 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-selection-tabs-list-gap",
     "group": "kit",
     "type": "dimension",
-    "description": "Between triggers: a lit tile never touches its neighbour"
+    "description": "Between triggers: the selection never touches its neighbour"
   },
   {
     "name": "nk-selection-tabs-list-rest",
     "group": "kit",
     "type": "dimension",
-    "description": "Room under the triggers besides the tile's wall"
+    "description": "Room under the triggers besides the selection's wall"
   },
   {
     "name": "nk-selection-tabs-trigger-height",
@@ -3214,7 +3214,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-chip-square-size",
     "group": "kit",
     "type": "dimension",
-    "description": "A tile chip's box"
+    "description": "A square chip's box"
   },
   {
     "name": "nk-chip-padding",
@@ -3232,7 +3232,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-chip-hud-radius",
     "group": "kit",
     "type": "dimension",
-    "description": "A square HUD tile's radius (hotbar, target eye)"
+    "description": "A square HUD chip's radius (hotbar, target eye)"
   },
   {
     "name": "nk-chip-bg",
@@ -3298,7 +3298,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-chip-icon-size-square",
     "group": "kit",
     "type": "dimension",
-    "description": "A tile chip's icon"
+    "description": "A square chip's icon"
   },
   {
     "name": "nk-vital-chip-size",
@@ -3604,13 +3604,13 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-slab-icon-size",
     "group": "kit",
     "type": "dimension",
-    "description": "The icon tile's size"
+    "description": "The icon box's size"
   },
   {
     "name": "nk-slab-icon-bg",
     "group": "kit",
     "type": "color",
-    "description": "The icon tile"
+    "description": "The icon box"
   },
   {
     "name": "nk-slab-icon-fg",
@@ -3622,7 +3622,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-slab-icon-radius",
     "group": "kit",
     "type": "dimension",
-    "description": "The icon tile's radius"
+    "description": "The icon box's radius"
   },
   {
     "name": "nk-slab-delta-font",

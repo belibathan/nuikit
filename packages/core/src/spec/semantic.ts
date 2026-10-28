@@ -11,8 +11,8 @@ export const timeGroup: Group = {
   levers: {
     snap: time("90ms", "A press, a rim switching state (0.5d)", { derived: true, floor: true, rule: "0.5 × motion.duration", was: ["nk-time-snap", "nk-time-press"] }),
     fast: time("120ms", "Hover, a face rising, a deny beat (0.667d)", { derived: true, floor: true, rule: "0.667 × motion.duration", was: ["nk-time-fast", "nk-time-hover"] }),
-    base: time("180ms", "Panel enter, the selection tile, tab switch (d)", { derived: true, floor: true, rule: "motion.duration", was: ["nk-time-base", "nk-time"] }),
-    slow: time("280ms", "Sheets, dialogs, a tile landing, toasts, a confirm pop (1.556d)", { derived: true, floor: true, rule: "1.556 × motion.duration", was: ["nk-time-slow", "nk-time-move", "nk-time-modal", "nk-time-confirm", "nk-time-retract", "nk-time-screen"] }),
+    base: time("180ms", "Panel enter, the selection, tab switch (d)", { derived: true, floor: true, rule: "motion.duration", was: ["nk-time-base", "nk-time"] }),
+    slow: time("280ms", "Sheets, dialogs, a glyph landing, toasts, a confirm pop (1.556d)", { derived: true, floor: true, rule: "1.556 × motion.duration", was: ["nk-time-slow", "nk-time-move", "nk-time-modal", "nk-time-confirm", "nk-time-retract", "nk-time-screen"] }),
     fill: time("420ms", "A level filling or draining; HUD show-on-change (2.333d)", { derived: true, floor: true, rule: "2.333 × motion.duration", was: ["nk-time-fill", "nk-time-ambient"] }),
     exit: time("126ms", "Every exit (d × exit-factor)", { derived: true, floor: true, rule: "motion.duration × motion.exit-factor", was: ["nk-time-exit"] }),
     pulse: time("1000ms", "One alert pulse", { derived: true, floor: true, rule: "1000ms (prefs clamp it)", was: ["nk-time-pulse"] }),
@@ -25,7 +25,7 @@ export const easeGroup: Group = {
   levers: {
     enter: ease(ref("motion.ease"), "Anything arriving: enter, hover", { was: ["nk-ease-out"] }),
     exit: ease("cubic-bezier(0.4, 0, 1, 1)", "Exits and things tucking away (speeds up as it leaves)", { floor: true, was: ["nk-ease-in", "nk-ease-retract"] }),
-    move: ease(ref("motion.ease"), "On-screen moves: the selection tile, FLIP, a tab underline", { was: ["nk-ease-standard", "nk-ease-in-out"] }),
+    move: ease(ref("motion.ease"), "On-screen moves: the selection, FLIP, a tab underline", { was: ["nk-ease-standard", "nk-ease-in-out"] }),
     expand: ease("cubic-bezier(0.16, 1, 0.3, 1)", "Things opening and growing; full-screen enter", { floor: true, was: ["nk-ease-expand", "nk-ease-emphasized"] }),
     spring: ease("cubic-bezier(0.34, 1.56, 0.64, 1)", "An overshoot without a spring (confirm pops, press release)", { floor: true, was: ["nk-ease-spring"] }),
     breathe: ease("cubic-bezier(0.45, 0, 0.55, 1)", "Loops: alert pulses", { floor: true, was: ["nk-ease-breathe"] }),
@@ -63,7 +63,7 @@ export const gesture: Group = {
   levers: {
     lift: length("0.5rem", "A row's content and a slot sliding in on focus", { floor: true, was: ["nk-lift", "nk-row-lift"] }),
     rise: length("0.5rem", "How far things rise as they enter", { floor: true, was: ["nk-rise"] }),
-    land: number(0.6, "The scale a tile lands from", { range: [0, 1], floor: true, was: ["nk-land-scale"] }),
+    land: number(0.6, "The scale a glyph lands from", { range: [0, 1], floor: true, was: ["nk-land-scale"] }),
     deny: length("0.3125rem", "The deny shake's distance", { floor: true, was: ["nk-deny-x"] }),
     press: number(0.97, "The scale of a pressed row or button", { range: [0.8, 1], floor: true, was: ["nk-press-scale"] }),
     confirm: number(1.08, "The short pop of a confirm", { range: [1, 1.2], floor: true, was: ["nk-confirm-scale"] }),
@@ -102,7 +102,7 @@ export const accentGroup: Group = {
   tier: "semantic",
   description: "The signature paint and its stops",
   levers: {
-    paint: paint(pal("brand"), "An active tile's face, the speedometer's level, the compass N (a colour or a gradient)", { was: ["nk-accent-gradient"] }),
+    paint: paint(pal("brand"), "An active glyph's face, the speedometer's level, the compass N (a colour or a gradient)", { was: ["nk-accent-gradient"] }),
     from: color(pal("brand"), "First stop (SVG strokes)", { was: ["nk-accent-from"] }),
     via: color(ref("accent.from"), "Middle stop", { was: ["nk-accent-via"] }),
     to: color(ref("accent.from"), "Last stop", { was: ["nk-accent-to"] }),
@@ -129,7 +129,7 @@ export const lineGroup: Group = {
     width: length(ref("shape.stroke"), "Every hairline", { was: ["nk-border"] }),
     focus: color(pal("ring"), "A text field's caret rim (and a checkbox's or switch's lit rim): the only focus line", { was: ["nk-focus-rim"] }),
     clip: string("none", "clip-path of panels: the shape.cut chamfer, or none", { derived: true, floor: true, was: ["nk-clip"] }),
-    "clip-sm": string("none", "clip-path of chips, tiles and buttons: half the chamfer", { derived: true, floor: true, was: ["nk-clip-sm"] }),
+    "clip-sm": string("none", "clip-path of chips, glyphs and buttons: half the chamfer", { derived: true, floor: true, was: ["nk-clip-sm"] }),
     glow: length("1rem", "Blur radius of a row's glow (a chip's is 0.75 of it, a meter's 0.625)", { floor: true, was: ["nk-glow-radius"] }),
   },
 };

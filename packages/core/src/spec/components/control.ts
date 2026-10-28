@@ -15,7 +15,7 @@ export const control: ComponentDef = {
       dim: color(ref("control.plate.color"), "The plate on the HUD", { was: ["nk-control-plate-dim"] }),
       x: length("0px", "How far the plate sits right of the face (0 = none)", { floor: true, was: ["nk-control-plate-x"] }),
       y: length("0px", "How far the plate sits below the face (0 = none)", { floor: true, was: ["nk-control-plate-y"] }),
-      press: length("1px", "How far a held tile presses toward its plate", { floor: true, was: ["nk-control-press"] }),
+      press: length("1px", "How far a held glyph presses toward its plate", { floor: true, was: ["nk-control-press"] }),
     },
     wall: {
       height: length("0rem", "How far the face sits above its wall (0 = flat; the primary button, the selection)", { floor: true, was: ["nk-control-wall", "nk-button-wall"] }),
@@ -34,7 +34,7 @@ export const control: ComponentDef = {
       clip: string(ref("line.clip-sm"), "The face's clip-path (the chamfer)", { was: ["nk-key-clip"] }),
       confirm: color(pal("foreground"), "The face when confirmed", { was: ["nk-control-confirm-face"] }),
       "confirm-ink": color(pal("background"), "The legend when confirmed", { was: ["nk-control-confirm-ink"] }),
-      active: paint(ref("accent.paint"), "The face of an active tile (the mic while talking, N on the compass, a checked box)", { was: ["nk-control-active"] }),
+      active: paint(ref("accent.paint"), "The face of an active glyph (the mic while talking, N on the compass, a checked box)", { was: ["nk-control-active"] }),
       hold: color(alpha("foreground", 0.35), "The hold fill over the face", { was: ["nk-control-hold"] }),
     },
     legend: {
@@ -42,11 +42,11 @@ export const control: ComponentDef = {
       weight: number(ref("type.scan.weight"), "The legend's weight", { range: [100, 900], was: ["nk-key-weight"] }),
       pad: length(css`calc(${ref("type.scan.pad")} / 2)`, "The italic overhang split to both sides", { was: ["nk-control-legend-pad"] }),
       shift: length("0em", "A nudge for a leaning face", { floor: true, was: ["nk-control-legend-shift"] }),
-      gap: length(ref("space.1"), "Between a tile's glyphs", { was: ["nk-control-gap"] }),
+      gap: length(ref("space.1"), "Between a glyph's characters", { was: ["nk-control-gap"] }),
       inset: length(ref("space.1"), "The legend's inline padding", { was: ["nk-control-pad"] }),
     },
     tag: {
-      delay: time("80ms", "The tag opens this long after the tile lands", { floor: true, was: ["nk-control-tag-delay"] }),
+      delay: time("80ms", "The tag opens this long after the glyph lands", { floor: true, was: ["nk-control-tag-delay"] }),
     },
     primary: {
       color: color(pal("primary"), "The keycap face under style.fill solid (the primary button, the lit row, the active tab)", { was: ["nk-control-key"] }),
@@ -54,10 +54,10 @@ export const control: ComponentDef = {
       rim: color("transparent", "The keycap face's rim (transparent = none)", { floor: true, was: ["nk-control-primary-rim"] }),
       radius: length(ref("radius.control"), "The keycap's radius", { was: ["nk-control-radius"] }),
       tint: number(0.16, "The face's opacity under style.fill soft", { range: [0, 1], floor: true, was: ["nk-control-tint"] }),
-      inset: length("0.375rem", "How far a selection tile sits in from its item's sides (room for the skew)", { floor: true, was: ["nk-control-inset"] }),
+      inset: length("0.375rem", "How far the selection sits in from its item's sides (room for the skew)", { floor: true, was: ["nk-control-inset"] }),
       lift: length("1px", "How far the face rises on hover and focus", { floor: true, was: ["nk-control-lift"] }),
       press: number(0.67, "How far a pressed keycap sinks, as a fraction of its wall", { range: [0, 1.5], floor: true, was: ["nk-control-press-ratio"] }),
-      overhang: length("0.25rem", "How far a row's selection tile reaches past its text", { floor: true, was: ["nk-control-overhang"] }),
+      overhang: length("0.25rem", "How far a row's selection reaches past its text", { floor: true, was: ["nk-control-overhang"] }),
     },
   },
   state: {
@@ -75,6 +75,6 @@ export const control: ComponentDef = {
     "sel-shape": { type: "keyword", description: "The selection's shape: its own, or inherit (the host's)", was: ["nk-sel-shape"] },
     "host-radius": { type: "length", description: "The radius of what the selection sits on (shape inherit)", was: ["nk-host-radius"] },
     "host-clip": { type: "string", description: "The clip-path of what the selection sits on", was: ["nk-host-clip"] },
-    tone: { type: "color", description: "A tile's tone (data-tone, data-hue)", was: ["nk-control-tone"] },
+    tone: { type: "color", description: "A glyph's tone (data-tone, data-hue)", was: ["nk-control-tone"] },
   },
 };

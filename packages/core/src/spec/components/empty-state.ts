@@ -14,8 +14,8 @@ export const emptyState: ComponentDef = {
   parts: {
     header: { gap: length(ref("space.2"), "Between the icon, the title and the description") },
     icon: {
-      box: length("2.5rem", "The icon's box (panel size, no tile)", { floor: true }),
-      "box-screen": length("3rem", "The icon's box (screen size, no tile)", { floor: true }),
+      box: length("2.5rem", "The icon's box (panel size, no glyph)", { floor: true }),
+      "box-screen": length("3rem", "The icon's box (screen size, no glyph)", { floor: true }),
       glyph: length(ref("icon.lg"), "The glyph inside the box"),
       gap: length(ref("space.1"), "Under the icon"),
       ink: color(pal("muted-foreground"), "The icon's ink"),

@@ -127,7 +127,7 @@ export const radius: Group = {
   tier: "identity",
   description: "Four radius steps from --radius",
   levers: {
-    key: length(css`max(0.25rem, calc(${pal("radius")} - 0.5rem))`, "Keys and small tiles", { was: ["nk-r-key"] }),
+    key: length(css`max(0.25rem, calc(${pal("radius")} - 0.5rem))`, "Keys and small glyphs", { was: ["nk-r-key"] }),
     chip: length(css`max(0.25rem, calc(${pal("radius")} - 0.375rem))`, "Chips and badges", { was: ["nk-r-chip"] }),
     control: length(css`calc(${pal("radius")} - 0.25rem)`, "Buttons, fields, rows, the keycap", { was: ["nk-r-control"] }),
     surface: length(ref("material.menu.radius"), "Panels, sheets, dialogs", { was: ["nk-r-surface"] }),
@@ -139,9 +139,9 @@ export const height: Group = {
   tier: "identity",
   description: "The height steps",
   levers: {
-    key: length("1.5rem", "A key / small tile", { was: ["nk-h-key"] }),
-    chip: length(css`calc(1.75rem * ${ref("density")})`, "A chip / medium tile", { was: ["nk-h-chip"] }),
-    control: length("2.25rem", "Buttons and bar items / large tile", { was: ["nk-h-control"] }),
+    key: length("1.5rem", "A key / small glyph", { was: ["nk-h-key"] }),
+    chip: length(css`calc(1.75rem * ${ref("density")})`, "A chip / medium glyph", { was: ["nk-h-chip"] }),
+    control: length("2.25rem", "Buttons and bar items / large glyph", { was: ["nk-h-control"] }),
     row: length(css`calc(3rem * ${ref("density")})`, "A list row", { was: ["nk-h-row"] }),
     field: length("2.75rem", "Text inputs, selects and dialog buttons", { was: ["nk-h-field"] }),
   },
