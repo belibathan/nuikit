@@ -73,7 +73,7 @@ function Hud(props: { settings: HudSettings } & HudData) {
     void fetchNui("hud:shown", { shown: open }).catch(() => {});
   }, [open]);
   usePublishZones(open);
-  // Foundation 2 situations: a moment is any change to what the HUD shows (situation.ts)
+  // Situations: a moment is any change to what the HUD shows (situation.ts)
   const lua: Situation = useNuiState("hud:situation", { name: "rest" }).name;
   // the moment's key reads the player through a selector, and only when the situations retract: a vital
   // changing must not re-render the whole HUD (the vitals row and the wallet subscribe on their own)
@@ -134,7 +134,7 @@ function usePublishZones(open: boolean) {
     if (!open) return;
     const W = window.innerWidth;
     const H = window.innerHeight;
-    // one rect per part, named by its Foundation 2 zone (parts.tsx PART_ZONE); the map layer is "map"
+    // one rect per part, named by its zone (parts.tsx PART_ZONE); the map layer is "map"
     const rects: { x: number; y: number; w: number; h: number; zone: string }[] = [];
     document.querySelectorAll<HTMLElement>('[data-slot="hud-side"]').forEach((side) => {
       const m = new DOMMatrixReadOnly(getComputedStyle(side).transform === "none" ? undefined : getComputedStyle(side).transform);
@@ -211,7 +211,7 @@ function corners(groups: ReturnType<typeof placeParts>, side: "left" | "right", 
 }
 
 /**
- * Compact (default, design v2 §4): one cluster per job. Top right the map with the compass on its
+ * Compact (default): one cluster per job. Top right the map with the compass on its
  * ring, the location and money under it; bottom left the vitals; bottom right the ammo over the
  * vehicle cluster. Nothing floats alone. Config.parts moves any of them.
  */

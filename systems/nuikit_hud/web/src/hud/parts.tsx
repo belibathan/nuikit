@@ -71,7 +71,7 @@ export const BESIDE_CLASS: Record<HudCorner, string> = {
 export const cornerSide = (c: HudCorner) => (c.endsWith("left") ? "left" : "right");
 
 /**
- * Foundation 2 zone names: every part belongs to one, wherever Config.parts or /hud edit put it.
+ * Zone names: every part belongs to one, wherever Config.parts or /hud edit put it.
  * The HUD publishes its screen zones by these names (hud:zones → NUI.zone), and client/layout.lua
  * keeps a default box for each name, the HUD's and the rest (prompts, interaction, toasts).
  */

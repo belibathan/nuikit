@@ -10,7 +10,7 @@ import { BodyIcon, CruiseIcon, EngineIcon, HandbrakeIcon, HighBeamIcon, LowBeamI
 import type { GaugeStyle, HudLook } from "./look";
 import { Aircraft } from "./aircraft";
 import { CompactGauge, TelltaleColumn } from "./compact";
-import { Keycap } from "./keycap";
+import { Mark } from "./mark";
 import { cardinal, setText, UNIT_LABEL } from "./util";
 import { Chip } from "@/components/ui/chip";
 import { cn } from "@/lib/utils";
@@ -253,8 +253,8 @@ function ArcGauge({ v, look, paint, settings, center }: GaugeProps) {
           </span>
         ) : (
           v.gear !== undefined && (
-            <span data-slot="hud-gear" data-gear={String(v.gear)} className="hud-c-gear-tile" aria-label="Gear">
-              <Keycap glyph={String(v.gear)} />
+            <span data-slot="hud-gear" data-gear={String(v.gear)} className="hud-c-gear-mark" aria-label="Gear">
+              <Mark glyph={String(v.gear)} />
             </span>
           )
         )}
@@ -315,8 +315,8 @@ function BarGauge({ v, look, paint, settings, center }: GaugeProps) {
           <span ref={heading} className="hud-gear hud-gear-wide hud-num">{`${Math.round(v.heading ?? 0) % 360}° ${cardinal(v.heading ?? 0)}`}</span>
         ) : (
           v.gear !== undefined && (
-            <span data-slot="hud-gear" data-gear={String(v.gear)} className="hud-c-gear-tile" aria-label="Gear">
-              <Keycap glyph={String(v.gear)} />
+            <span data-slot="hud-gear" data-gear={String(v.gear)} className="hud-c-gear-mark" aria-label="Gear">
+              <Mark glyph={String(v.gear)} />
             </span>
           )
         )}
@@ -393,8 +393,8 @@ function DigitalGauge({ v, paint, settings, center }: GaugeProps) {
           <span ref={heading} className="hud-gear hud-gear-wide hud-num">{`${Math.round(v.heading ?? 0) % 360}° ${cardinal(v.heading ?? 0)}`}</span>
         ) : (
           v.gear !== undefined && (
-            <span data-slot="hud-gear" data-gear={String(v.gear)} className="hud-c-gear-tile" aria-label="Gear">
-              <Keycap glyph={String(v.gear)} />
+            <span data-slot="hud-gear" data-gear={String(v.gear)} className="hud-c-gear-mark" aria-label="Gear">
+              <Mark glyph={String(v.gear)} />
             </span>
           )
         )}

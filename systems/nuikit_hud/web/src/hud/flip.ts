@@ -1,6 +1,6 @@
 // FLIP for the HUD's rows: when a chip leaves or joins a row, its neighbours jump to their new place and
 // slide back from the old one with a transform. Layout is read twice per change (before, after), never
-// per frame: the row's width itself never animates (Foundation 2 / CEF rule: transform and opacity only).
+// per frame: the row's width itself never animates (the CEF rule: transform and opacity only).
 import { motionLevel } from "nuikit-core/motion";
 
 export const FOLD_MS = 300;

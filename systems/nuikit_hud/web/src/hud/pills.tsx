@@ -1,5 +1,5 @@
-// The status row (both layouts), built from the kit's VitalChip (components/ui/vital-chip): the keycap
-// (its default shape: a Glyph face over a plate that slides out with the label, the level as a liquid in the
+// The status row (both layouts), built from the kit's VitalChip (components/ui/vital-chip): its default
+// shape (a Glyph face over a plate that slides out with the label, the level as a liquid in the
 // face), or a shape path per chip (/hudstyle), and a pop.
 //
 // Voice first, the vitals, the radio channel last (the 0.7 order and look). Each vital shows on change or
@@ -37,7 +37,7 @@ interface VitalProps {
 
 export type VitalDisplay = "icons" | "value" | "pill" | "expand";
 
-// Roles (tokens 1.4): the wrapper carries data-hue="<vital>", and kit.css gives it --hue-solid from
+// Roles: the wrapper carries data-hue="<vital>", and kit.css gives it --hue-solid from
 // --role-<vital>; --vital-<tone> only for a page without the 1.4 kit.
 const roleColour = (tone: Tone) => ({ "--vital": `var(--hue-solid, var(--vital-${tone}))` }) as CSSProperties;
 
@@ -48,7 +48,7 @@ export const VitalItem = memo(function VitalItem({ tone, value, mode, low, high,
   // value and pill keep their label open; expand opens it on a change and settles after the theme's
   // --nk-behavior-rest (the vitals' linger when that is 0); those three show the change there, not as a pop
   const expanded = useExpanded(`${v}:${force?.nonce ?? 0}`, linger);
-  // one variant: a tag tucks out from behind the keycap on a change (or stays out for pill / value)
+  // one variant: a tag tucks out from behind the face on a change (or stays out for pill / value)
   const open = display === "value" || display === "pill" || expanded;
   void pop;
   const critical = value !== undefined && vitalCritical(tone, v, low, high);
@@ -187,11 +187,6 @@ export function VitalsRow({ settings, layout }: { settings: HudSettings; layout:
     </div>
     </Stagger>
   );
-}
-
-/** The compact preset's vitals (bottom left, or beside a map in that corner). */
-export function VitalsCompact({ settings }: { settings: HudSettings }) {
-  return <VitalsRow settings={settings} layout="compact" />;
 }
 
 /** At most this many tags are out at once; the rest wait their turn (a change still shows once a slot frees). */

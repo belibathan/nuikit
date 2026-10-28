@@ -1,6 +1,6 @@
-// The compact vehicle cluster (design v2 §4, reference screens): the kit's Speedometer (components/ui/speedometer,
+// The compact vehicle cluster: the kit's Speedometer (components/ui/speedometer,
 // the in-game gauge: thick rpm segments with even gaps or a thin arc over ticks, the speed with its leading zeros
-// dimmed, the gear keycap in the opening, fuel on the outer right-hand curve, the signals inside the ring) with
+// dimmed, the gear Mark in the opening, fuel on the outer right-hand curve, the signals inside the ring) with
 // the telltales as a narrow column beside it, lit only when on. The identity's gauge style picks the drawing:
 // `digital` and `arc` are the Speedometer's styles; `bar` is a rectangular plate (speed and unit, the gear chip
 // beside them, a segmented rpm bar under), drawn here.
@@ -17,7 +17,7 @@ import type { HudSettings, HudVehicle } from "../nui";
 import { Signal, type Painter, type Tell } from "./cluster";
 import type { GaugeStyle, HudLook } from "./look";
 import { calm } from "./reel";
-import { Keycap } from "./keycap";
+import { Mark } from "./mark";
 import { cardinal, setText, UNIT_LABEL } from "./util";
 
 const clamp01 = (v: number) => Math.max(0, Math.min(1, Number.isFinite(v) ? v : 0));
@@ -145,8 +145,8 @@ function Gear({ gear }: { gear: HudVehicle["gear"] }) {
   }
   if (gear === undefined) return null;
   return (
-    <span data-slot="hud-gear" data-gear={String(gear)} className="hud-c-gear-tile" aria-label="Gear">
-      <Keycap glyph={<TextRoll value={String(gear)} direction={dir.current} align="center" />} />
+    <span data-slot="hud-gear" data-gear={String(gear)} className="hud-c-gear-mark" aria-label="Gear">
+      <Mark glyph={<TextRoll value={String(gear)} direction={dir.current} align="center" />} />
     </span>
   );
 }
@@ -261,7 +261,7 @@ function Telltale({ t }: { t: Tell }) {
   const stagger = useStaggerItem<HTMLSpanElement>(!!t.on);
   return (
     <span ref={stagger} data-slot="hud-telltale" data-key={t.key} data-on={t.on || undefined} data-tone={t.tone} className="hud-c-tell" aria-label={t.label} aria-hidden={!t.on}>
-      <Keycap size="sm" icon={t.icon} open={!!t.text} label={t.text && <span className="nk-num">{t.text}</span>} />
+      <Mark size="sm" icon={t.icon} open={!!t.text} label={t.text && <span className="nk-num">{t.text}</span>} />
     </span>
   );
 }
