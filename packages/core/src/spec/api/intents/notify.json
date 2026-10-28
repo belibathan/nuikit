@@ -79,7 +79,7 @@
           "type": "string"
         }
       },
-      "doc": "An item added or removed: draws the item slab (tile + name + change) instead of a panel, and merges with the same item's recent change."
+      "doc": "An item added or removed: draws the item slab (icon + name + change) instead of a panel, and merges with the same item's recent change."
     },
     "sound": {
       "type": "oneOf",

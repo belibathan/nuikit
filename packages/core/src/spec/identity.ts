@@ -1,7 +1,7 @@
 /**
- * Identity: what a server chooses. The only tier with literal defaults, and those defaults ARE the premium baseline
- * (docs/design.md): compileTheme("") already draws keycap tiles on hard plates, solid fills, segmented
- * progress, two voices and one sliding selection. A theme is a handful of values on top.
+ * Identity: what a server chooses. The only tier with literal defaults, and those defaults are the flat baseline
+ * (docs/design.md): compileTheme("") already draws upright controls with no wall, solid fills, hard drops, two
+ * voices and one sliding selection. A theme is a handful of values on top.
  */
 import { angle, color, css, ease, font, keyword, length, lit, number, pal, ref, shadow, time, times, type Group, type LeverDef, type Value } from "./lang";
 import { ROLE_DEFAULTS, ROLES } from "./roles";
@@ -24,7 +24,7 @@ export const palette: Group = {
     "card-foreground": color(lit("oklch(0.985 0 0)"), "Text on cards", { rule: "stock shadcn neutral" }),
     popover: color(lit("oklch(0.205 0 0)"), "Every floating panel", { rule: "stock shadcn neutral", core: true }),
     "popover-foreground": color(lit("oklch(0.985 0 0)"), "Text in panels", { rule: "stock shadcn neutral", core: true }),
-    primary: color(lit("oklch(0.922 0 0)"), "The one main action per surface, the keycap face, selection", { rule: "stock shadcn neutral", core: true }),
+    primary: color(lit("oklch(0.922 0 0)"), "The one main action per surface, the primary face, selection", { rule: "stock shadcn neutral", core: true }),
     "primary-foreground": color(lit("oklch(0.205 0 0)"), "Text on primary", { rule: "stock shadcn neutral", core: true }),
     secondary: color(lit("oklch(0.269 0 0)"), "Secondary buttons", { rule: "stock shadcn neutral" }),
     "secondary-foreground": color(lit("oklch(0.985 0 0)"), "Text on secondary", { rule: "stock shadcn neutral" }),
@@ -129,7 +129,7 @@ export const radius: Group = {
   levers: {
     key: length(css`max(0.25rem, calc(${pal("radius")} - 0.5rem))`, "Keys and small glyphs", { was: ["nk-r-key"] }),
     chip: length(css`max(0.25rem, calc(${pal("radius")} - 0.375rem))`, "Chips and badges", { was: ["nk-r-chip"] }),
-    control: length(css`calc(${pal("radius")} - 0.25rem)`, "Buttons, fields, rows, the keycap", { was: ["nk-r-control"] }),
+    control: length(css`calc(${pal("radius")} - 0.25rem)`, "Buttons, fields, rows, the primary face", { was: ["nk-r-control"] }),
     surface: length(ref("material.menu.radius"), "Panels, sheets, dialogs", { was: ["nk-r-surface"] }),
   },
 };
@@ -251,14 +251,13 @@ export const surface: Group = {
     backdrop: keyword(["on", "off"], "off", "Backdrop blur (FiveM draws it as a black box: off)", { attr: "backdrop", was: ["nk-backdrop"] }),
     legibility: keyword(["auto", "night", "day"], "auto", "day lifts surfaces for a bright sky; auto follows the game clock", { attr: "legibility", was: ["nk-legibility"] }),
     "legibility-lift": number(0.5, "How far day closes the gap to opaque", { range: [0, 1], was: ["nk-legibility-lift"] }),
-    slash: keyword(["none", "cut"], "none", "A decorative diagonal cut on menus", { attr: "slash", was: ["nk-slash"] }),
   },
 };
 
 /** Materials: one per context. Defaults follow surface.* (the compiler fills them). */
 export const material: Group = {
   tier: "identity",
-  description: "Per context (hud: drawn on the game; menu: menus, sheets, dialogs): opacity, blur, radius, edge, texture",
+  description: "Per context (hud: drawn on the game; menu: menus, sheets, dialogs): opacity, blur, radius, edge",
   levers: {},
   parts: Object.fromEntries(
     (["hud", "menu"] as const).map((ctx) => [
@@ -272,7 +271,6 @@ export const material: Group = {
               edge: number(0, "The machined top edge of menus (alpha)", { range: [0, 0.3], was: ["nk-material-menu-edge", "nk-surface-edge"] }),
             }
           : {}),
-        texture: keyword(["none", "scanlines"], "none", `Texture over the ${ctx} material`, { attr: `texture-${ctx}`, was: [`nk-material-${ctx}-texture`] }),
       },
     ]),
   ),

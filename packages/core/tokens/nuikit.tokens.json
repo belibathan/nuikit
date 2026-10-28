@@ -98,7 +98,7 @@
         "alpha": 1,
         "hex": "#e5e5e5"
       },
-      "$description": "The one main action per surface, the keycap face, selection"
+      "$description": "The one main action per surface, the primary face, selection"
     },
     "primary-foreground": {
       "$value": {
@@ -1331,28 +1331,10 @@
       "$value": 0.5,
       "$description": "How far day closes the gap to opaque"
     },
-    "surface-slash": {
-      "$value": "none",
-      "$description": "A decorative diagonal cut on menus",
-      "$extensions": {
-        "dev.nuikit": {
-          "type": "keyword"
-        }
-      }
-    },
     "material-hud-opacity": {
       "$type": "number",
       "$value": 0.8,
       "$description": "Opacity of the hud material"
-    },
-    "material-hud-texture": {
-      "$value": "none",
-      "$description": "Texture over the hud material",
-      "$extensions": {
-        "dev.nuikit": {
-          "type": "keyword"
-        }
-      }
     },
     "material-menu-opacity": {
       "$type": "number",
@@ -1371,15 +1353,6 @@
       "$type": "number",
       "$value": 0,
       "$description": "The machined top edge of menus (alpha)"
-    },
-    "material-menu-texture": {
-      "$value": "none",
-      "$description": "Texture over the menu material",
-      "$extensions": {
-        "dev.nuikit": {
-          "type": "keyword"
-        }
-      }
     },
     "hud-text": {
       "$value": "soft",

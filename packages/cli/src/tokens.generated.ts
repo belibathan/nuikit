@@ -40,7 +40,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "primary",
     "group": "base",
     "type": "color",
-    "description": "The one main action per surface, the keycap face, selection"
+    "description": "The one main action per surface, the primary face, selection"
   },
   {
     "name": "primary-foreground",
@@ -820,7 +820,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-radius-control",
     "group": "kit",
     "type": "dimension",
-    "description": "Buttons, fields, rows, the keycap"
+    "description": "Buttons, fields, rows, the primary face"
   },
   {
     "name": "nk-radius-surface",
@@ -1285,22 +1285,10 @@ export const GENERATED: { name: string; group: string; type: string; description
     "description": "How far day closes the gap to opaque"
   },
   {
-    "name": "nk-surface-slash",
-    "group": "kit",
-    "type": "number",
-    "description": "A decorative diagonal cut on menus"
-  },
-  {
     "name": "nk-material-hud-opacity",
     "group": "kit",
     "type": "number",
     "description": "Opacity of the hud material"
-  },
-  {
-    "name": "nk-material-hud-texture",
-    "group": "kit",
-    "type": "number",
-    "description": "Texture over the hud material"
   },
   {
     "name": "nk-material-menu-opacity",
@@ -1325,12 +1313,6 @@ export const GENERATED: { name: string; group: string; type: string; description
     "group": "kit",
     "type": "number",
     "description": "The machined top edge of menus (alpha)"
-  },
-  {
-    "name": "nk-material-menu-texture",
-    "group": "kit",
-    "type": "number",
-    "description": "Texture over the menu material"
   },
   {
     "name": "nk-hud-text",
@@ -2086,25 +2068,25 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-control-primary-color",
     "group": "kit",
     "type": "color",
-    "description": "The keycap face under style.fill solid (the primary button, the lit row, the active tab)"
+    "description": "The primary face under style.fill solid (the primary button, the lit row, the active tab)"
   },
   {
     "name": "nk-control-primary-ink",
     "group": "kit",
     "type": "color",
-    "description": "Text on the keycap face"
+    "description": "Text on the primary face"
   },
   {
     "name": "nk-control-primary-rim",
     "group": "kit",
     "type": "color",
-    "description": "The keycap face's rim (transparent = none)"
+    "description": "The primary face's rim (transparent = none)"
   },
   {
     "name": "nk-control-primary-radius",
     "group": "kit",
     "type": "dimension",
-    "description": "The keycap's radius"
+    "description": "The primary face's radius"
   },
   {
     "name": "nk-control-primary-tint",
@@ -2128,7 +2110,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-control-primary-press",
     "group": "kit",
     "type": "number",
-    "description": "How far a pressed keycap sinks, as a fraction of its wall"
+    "description": "How far a pressed primary sinks, as a fraction of its wall"
   },
   {
     "name": "nk-control-primary-overhang",
@@ -2344,7 +2326,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-list-pad-x",
     "group": "kit",
     "type": "dimension",
-    "description": "Inline padding: room for the tile's inset and skew"
+    "description": "Inline padding: room for the selection's inset and skew"
   },
   {
     "name": "nk-menu-row-gap",
@@ -2824,7 +2806,7 @@ export const GENERATED: { name: string; group: string; type: string; description
     "name": "nk-stepper-delay",
     "group": "kit",
     "type": "number",
-    "description": "The first repeat of a held keycap"
+    "description": "The first repeat of a held key"
   },
   {
     "name": "nk-stepper-rate",
@@ -2873,78 +2855,6 @@ export const GENERATED: { name: string; group: string; type: string; description
     "group": "kit",
     "type": "dimension",
     "description": "The header's minimum height"
-  },
-  {
-    "name": "nk-dialog-shell-width",
-    "group": "kit",
-    "type": "dimension",
-    "description": "Width (md)"
-  },
-  {
-    "name": "nk-dialog-shell-width-sm",
-    "group": "kit",
-    "type": "dimension",
-    "description": "Width (sm)"
-  },
-  {
-    "name": "nk-dialog-shell-width-lg",
-    "group": "kit",
-    "type": "dimension",
-    "description": "Width (lg)"
-  },
-  {
-    "name": "nk-dialog-shell-top",
-    "group": "kit",
-    "type": "dimension",
-    "description": "Where a top dialog anchors"
-  },
-  {
-    "name": "nk-dialog-shell-header-gap",
-    "group": "kit",
-    "type": "dimension",
-    "description": "Between the title and the description"
-  },
-  {
-    "name": "nk-dialog-shell-header-pad-x",
-    "group": "kit",
-    "type": "dimension",
-    "description": "Inline padding"
-  },
-  {
-    "name": "nk-dialog-shell-header-pad-y",
-    "group": "kit",
-    "type": "dimension",
-    "description": "Block padding"
-  },
-  {
-    "name": "nk-dialog-shell-body-pad",
-    "group": "kit",
-    "type": "dimension",
-    "description": "The body's padding"
-  },
-  {
-    "name": "nk-dialog-shell-footer-gap",
-    "group": "kit",
-    "type": "dimension",
-    "description": "Between the hints and the buttons"
-  },
-  {
-    "name": "nk-dialog-shell-footer-pad-x",
-    "group": "kit",
-    "type": "dimension",
-    "description": "Inline padding"
-  },
-  {
-    "name": "nk-dialog-shell-footer-pad-y",
-    "group": "kit",
-    "type": "dimension",
-    "description": "Block padding"
-  },
-  {
-    "name": "nk-dialog-shell-footer-bleed",
-    "group": "kit",
-    "type": "dimension",
-    "description": "How far the hints reach back into the padding (the first item's own inset lines up with the title)"
   },
   {
     "name": "nk-empty-state-gap",
@@ -3653,48 +3563,6 @@ export const GENERATED: { name: string; group: string; type: string; description
     "group": "kit",
     "type": "dimension",
     "description": "Between its rows"
-  },
-  {
-    "name": "nk-slab-band-padding",
-    "group": "kit",
-    "type": "number",
-    "description": "The band's padding"
-  },
-  {
-    "name": "nk-slab-band-gap",
-    "group": "kit",
-    "type": "dimension",
-    "description": "Between its lines"
-  },
-  {
-    "name": "nk-slab-band-bg",
-    "group": "kit",
-    "type": "color",
-    "description": "The game, darkened"
-  },
-  {
-    "name": "nk-slab-band-tint",
-    "group": "kit",
-    "type": "number",
-    "description": "The tone's alpha over the band"
-  },
-  {
-    "name": "nk-slab-band-edge",
-    "group": "kit",
-    "type": "number",
-    "description": "The tone's alpha on its edges"
-  },
-  {
-    "name": "nk-slab-band-fg",
-    "group": "kit",
-    "type": "color",
-    "description": "Text"
-  },
-  {
-    "name": "nk-slab-band-title-size",
-    "group": "kit",
-    "type": "dimension",
-    "description": "The band's line"
   },
   {
     "name": "nk-item-slot-width",

@@ -1,4 +1,4 @@
-/** VitalChip: one vital as a keycap Glyph with a level inside and a tag that slides out from behind it. */
+/** VitalChip: one vital as a Glyph with a level inside and a tag that slides out from behind it. */
 import { length, number, type ComponentDef } from "../lang";
 
 export const vitalChip: ComponentDef = {

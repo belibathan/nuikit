@@ -10,7 +10,7 @@ generated `@layer nk.base` block, and components read only levers. Four tiers, e
 - **semantic**: roles every component shares (the motion ladder, eases, plate, fill, accent, lines, depth).
 - **component** and **part**: `--nk-<component>-<prop>` and `--nk-<component>-<part>-<prop>`; parts are the component's anatomy, its `data-slot` names in render order. A component references only itself, a component it `inherits`, or the tiers above.
 
-**650 levers** (252 identity, 60 semantic, 338 component) · **36 components** · **34 state variables** (set by kit.css rules per state; not levers). Old names: `packages/core/spec/migration.json`, applied by `node packages/core/scripts/migrate-levers.mjs <path>`.
+**628 levers** (249 identity, 60 semantic, 319 component) · **35 components** · **34 state variables** (set by kit.css rules per state; not levers). Old names: `packages/core/spec/migration.json`, applied by `node packages/core/scripts/migrate-levers.mjs <path>`.
 
 ## The language: the core identity
 
@@ -25,7 +25,7 @@ Tokens file), not the `--nk-` name nuikit's kit uses. The palette rows are shadc
 | `--foreground` | color | `stock shadcn neutral` |  | Text on full-screen surfaces |
 | `--popover` | color | `stock shadcn neutral` |  | Every floating panel |
 | `--popover-foreground` | color | `stock shadcn neutral` |  | Text in panels |
-| `--primary` | color | `stock shadcn neutral` |  | The one main action per surface, the keycap face, selection |
+| `--primary` | color | `stock shadcn neutral` |  | The one main action per surface, the primary face, selection |
 | `--primary-foreground` | color | `stock shadcn neutral` |  | Text on primary |
 | `--muted` | color | `stock shadcn neutral` |  | Tracks, slots and wells inside a panel |
 | `--muted-foreground` | color | `stock shadcn neutral` |  | Secondary text |
@@ -90,16 +90,16 @@ the DOM, not the framework. Composites (meters, sheets, notices) are nuikit's ow
 | **zone** | Nine places and four edges; a zone stacks what it holds towards the screen centre | `item` | 1 |
 | **region** | A readable column inside a zone | `body` | 2 |
 | **grid** | A grid of cells (inventories, shops) | `cell` | 2 |
-| **control** | The keycap: Kbd, notice icons, telltales, the primary button and the selection | `plate` → `wall` → `face` → `fill` → `legend` → `tag` → `group` → `primary` | 37 |
+| **control** | The Glyph: Kbd, notice icons, telltales, the primary button and the selection | `plate` → `wall` → `face` → `fill` → `legend` → `tag` → `group` → `primary` | 37 |
 | **panel** | Every floating surface: menus, inventories, dialogs (the nk-panel utility) | `header` → `icon` → `title` → `description` → `actions` → `body` → `footer` | 22 |
 | **row** | The list row (nk-row): generous padding, an icon column, two voices; lit on the control face | `icon` → `title` → `description` → `trail` → `bar` | 11 |
 | **list** | A list of selectable items (nk-list, MenuRowList): items a gap apart so a lit selection never touches its neighbour | `item` | 2 |
 | **selection** | The one sliding selection per list (nk-indicator, Selection) | `glyph` | 2 |
-| **text** | Rich text with inline keycaps | `key` | 1 |
+| **text** | Rich text with inline keys | `key` | 1 |
 | **chip** | Always-on HUD chips and squares on the game (nk-chip, nk-hud) | `icon` → `count` | 16 |
 | **level** | How a level is drawn under style.level and style.hold (pips, the hold ring, the ink over a solid fill) | `pip` → `hold` → `fill` | 4 |
 | **dial** | The dial under gauges and rings: a disc, ticks, a segmented track | `disc` → `ticks` → `track` → `segments` → `segment` → `value` → `needle` → `center` | 1 |
-| **slab** | Transient feedback on the game: item, prompt, progress, band (nk-slab*) | `icon` → `delta` → `key` → `stack` → `line` → `band` → `band-title` | 33 |
+| **slab** | Transient feedback on the game: item, prompt, progress (nk-slab*) | `icon` → `delta` → `key` → `stack` → `line` | 26 |
 
 ## Identity
 
@@ -115,7 +115,7 @@ Colours: shadcn's set and the game's (status, HUD, scrim, world, vitals, roles).
 | `--card-foreground` | color | `stock shadcn neutral` |  | Text on cards |
 | `--popover` | color | `stock shadcn neutral` |  | Every floating panel |
 | `--popover-foreground` | color | `stock shadcn neutral` |  | Text in panels |
-| `--primary` | color | `stock shadcn neutral` |  | The one main action per surface, the keycap face, selection |
+| `--primary` | color | `stock shadcn neutral` |  | The one main action per surface, the primary face, selection |
 | `--primary-foreground` | color | `stock shadcn neutral` |  | Text on primary |
 | `--secondary` | color | `stock shadcn neutral` |  | Secondary buttons |
 | `--secondary-foreground` | color | `stock shadcn neutral` |  | Text on secondary |
@@ -280,7 +280,7 @@ Four radius steps from --radius.
 |---|---|---|---|---|
 | `--nk-radius-key` | length | `max(0.25rem, calc(var(--radius) - 0.5rem))` |  | Keys and small glyphs |
 | `--nk-radius-chip` | length | `max(0.25rem, calc(var(--radius) - 0.375rem))` |  | Chips and badges |
-| `--nk-radius-control` | length | `calc(var(--radius) - 0.25rem)` |  | Buttons, fields, rows, the keycap |
+| `--nk-radius-control` | length | `calc(var(--radius) - 0.25rem)` |  | Buttons, fields, rows, the primary face |
 | `--nk-radius-surface` | length | `var(--nk-material-menu-radius)` |  | Panels, sheets, dialogs |
 
 ### height
@@ -407,21 +407,18 @@ How surfaces sit over the game: opacity, tint, light, depth, glow.
 | `--nk-surface-backdrop` | keyword | `off` | on off | Backdrop blur (FiveM draws it as a black box: off) |
 | `--nk-surface-legibility` | keyword | `auto` | auto night day | day lifts surfaces for a bright sky; auto follows the game clock |
 | `--nk-surface-legibility-lift` | number | `0.5` | 0–1 | How far day closes the gap to opaque |
-| `--nk-surface-slash` | keyword | `none` | none cut | A decorative diagonal cut on menus |
 
 ### material
 
-Per context (hud: drawn on the game; menu: menus, sheets, dialogs): opacity, blur, radius, edge, texture.
+Per context (hud: drawn on the game; menu: menus, sheets, dialogs): opacity, blur, radius, edge.
 
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
 | `--nk-material-hud-opacity` | number | `0.8` | 0–1 | Opacity of the hud material |
-| `--nk-material-hud-texture` | keyword | `none` | none scanlines | Texture over the hud material |
 | `--nk-material-menu-opacity` | number | `0.94` | 0–1 | Opacity of the menu material (floor 0.92 for text) |
 | `--nk-material-menu-blur` | length | `0px` |  | Backdrop blur behind menus (with surface.backdrop on) |
 | `--nk-material-menu-radius` | length | `var(--radius)` |  | Corner radius of menus, sheets and dialogs |
 | `--nk-material-menu-edge` | number | `0` | 0–0.3 | The machined top edge of menus (alpha) |
-| `--nk-material-menu-texture` | keyword | `none` | none scanlines | Texture over the menu material |
 
 ### hud
 
@@ -699,7 +696,7 @@ State: `--nk-grid-cols`.
 
 ### control
 
-The keycap: Kbd, notice icons, telltales, the primary button and the selection. Anatomy: `plate` → `wall` → `face` → `fill` → `legend` → `tag` → `group` → `primary`.
+The Glyph: Kbd, notice icons, telltales, the primary button and the selection. Anatomy: `plate` → `wall` → `face` → `fill` → `legend` → `tag` → `group` → `primary`.
 
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
@@ -731,14 +728,14 @@ The keycap: Kbd, notice icons, telltales, the primary button and the selection. 
 | `--nk-control-legend-gap` | length | `var(--nk-space-1)` |  | Between a glyph's characters |
 | `--nk-control-legend-inset` | length | `var(--nk-space-1)` |  | The legend's inline padding |
 | `--nk-control-tag-delay` | time | `80ms` |  | The tag opens this long after the glyph lands |
-| `--nk-control-primary-color` | color | `var(--primary)` |  | The keycap face under style.fill solid (the primary button, the lit row, the active tab) |
-| `--nk-control-primary-ink` | color | `var(--primary-foreground)` |  | Text on the keycap face |
-| `--nk-control-primary-rim` | color | `transparent` |  | The keycap face's rim (transparent = none) |
-| `--nk-control-primary-radius` | length | `var(--nk-radius-control)` |  | The keycap's radius |
+| `--nk-control-primary-color` | color | `var(--primary)` |  | The primary face under style.fill solid (the primary button, the lit row, the active tab) |
+| `--nk-control-primary-ink` | color | `var(--primary-foreground)` |  | Text on the primary face |
+| `--nk-control-primary-rim` | color | `transparent` |  | The primary face's rim (transparent = none) |
+| `--nk-control-primary-radius` | length | `var(--nk-radius-control)` |  | The primary face's radius |
 | `--nk-control-primary-tint` | number | `0.16` | 0–1 | The face's opacity under style.fill soft |
 | `--nk-control-primary-inset` | length | `0.375rem` |  | How far the selection sits in from its item's sides (room for the skew) |
 | `--nk-control-primary-lift` | length | `1px` |  | How far the face rises on hover and focus |
-| `--nk-control-primary-press` | number | `0.67` | 0–1.5 | How far a pressed keycap sinks, as a fraction of its wall |
+| `--nk-control-primary-press` | number | `0.67` | 0–1.5 | How far a pressed primary sinks, as a fraction of its wall |
 | `--nk-control-primary-overhang` | length | `0.25rem` |  | How far a row's selection reaches past its text |
 
 State: `--nk-control-now-face`, `--nk-control-now-ink`, `--nk-control-now-rim`, `--nk-control-now-plate`, `--nk-control-x`, `--nk-control-y`, `--nk-control-sel-face`, `--nk-control-sel-wall`, `--nk-control-sel-shade`, `--nk-control-sel-ink`, `--nk-control-sel-rim`, `--nk-control-sel-shape`, `--nk-control-host-radius`, `--nk-control-host-clip`, `--nk-control-tone`.
@@ -799,7 +796,7 @@ A list of selectable items (nk-list, MenuRowList): items a gap apart so a lit se
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
 | `--nk-list-gap` | length | `calc(var(--nk-control-wall-height) + var(--nk-space-1))` |  | Between items: the wall plus breathing room |
-| `--nk-list-pad-x` | length | `calc(var(--nk-control-primary-inset) + var(--nk-control-primary-overhang))` |  | Inline padding: room for the tile's inset and skew |
+| `--nk-list-pad-x` | length | `calc(var(--nk-control-primary-inset) + var(--nk-control-primary-overhang))` |  | Inline padding: room for the selection's inset and skew |
 
 ### menu-row
 
@@ -910,24 +907,24 @@ One row of a game form: a label row over (or beside) the control, then a descrip
 
 ### stepper
 
-A value between two keycaps; held, it repeats. Anatomy: `glyph` → `value`. Inherits: `control`.
+A value between two keys; held, it repeats. Anatomy: `glyph` → `value`. Inherits: `control`.
 
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
-| `--nk-stepper-delay` | time | `350ms` |  | The first repeat of a held keycap |
+| `--nk-stepper-delay` | time | `350ms` |  | The first repeat of a held key |
 | `--nk-stepper-rate` | time | `70ms` |  | Then one repeat every |
 
 ### text
 
-Rich text with inline keycaps. Anatomy: `key`. Inherits: `control`.
+Rich text with inline keys. Anatomy: `key`. Inherits: `control`.
 
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
-| `--nk-text-key-scale` | number | `1` | 0.5–2 | The inline keycap's size, × height.key |
+| `--nk-text-key-scale` | number | `1` | 0.5–2 | The inline key's size, × height.key |
 
 ### notice
 
-A notice / toast: a Glyph icon, a title, a description, a time line. Anatomy: `stack` → `item` → `icon` → `item-tile` → `title` → `description` → `item-name` → `item-delta` → `time`. Inherits: `control`, `panel`.
+A notice / toast: a Glyph icon, a title, a description, a time line. Anatomy: `stack` → `item` → `icon` → `item-glyph` → `title` → `description` → `item-name` → `item-delta` → `time`. Inherits: `control`, `panel`.
 
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
@@ -954,25 +951,6 @@ A full-height sheet against a screen edge. Anatomy: `column` → `header` → `a
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
 | `--nk-edge-sheet-header-height` | length | `2rem` |  | The header's minimum height |
-
-### dialog-shell
-
-A modal question or form over the current surface: stock Dialog or AlertDialog on the plate recipe, a header, a padded body and an action-bar footer. Anatomy: `header` → `title` → `description` → `body` → `footer` → `actions`.
-
-| Lever | Type | Default | Range / values | What it moves |
-|---|---|---|---|---|
-| `--nk-dialog-shell-width` | length | `32rem` |  | Width (md) |
-| `--nk-dialog-shell-width-sm` | length | `24rem` |  | Width (sm) |
-| `--nk-dialog-shell-width-lg` | length | `40rem` |  | Width (lg) |
-| `--nk-dialog-shell-top` | length | `18vh` |  | Where a top dialog anchors |
-| `--nk-dialog-shell-header-gap` | length | `var(--nk-space-1)` |  | Between the title and the description |
-| `--nk-dialog-shell-header-pad-x` | length | `var(--nk-gap-surface)` |  | Inline padding |
-| `--nk-dialog-shell-header-pad-y` | length | `var(--nk-space-4)` |  | Block padding |
-| `--nk-dialog-shell-body-pad` | length | `var(--nk-gap-surface)` |  | The body's padding |
-| `--nk-dialog-shell-footer-gap` | length | `var(--nk-gap-cluster)` |  | Between the hints and the buttons |
-| `--nk-dialog-shell-footer-pad-x` | length | `var(--nk-gap-surface)` |  | Inline padding |
-| `--nk-dialog-shell-footer-pad-y` | length | `var(--nk-space-3)` |  | Block padding |
-| `--nk-dialog-shell-footer-bleed` | length | `var(--nk-space-2)` |  | How far the hints reach back into the padding (the first item's own inset lines up with the title) |
 
 ### empty-state
 
@@ -1024,7 +1002,7 @@ The action wheel: SVG wedges, one lit wedge turned to the pointed item, items on
 
 ### selection-tabs
 
-Tabs and segmented choices as one list with one sliding keycap (the tabs-list, tabs-trigger and tabs-content slots are shadcn's). Anatomy: `list` → `trigger`. Inherits: `selection`, `list`, `control`.
+Tabs and segmented choices as one list with one sliding selection (the tabs-list, tabs-trigger and tabs-content slots are shadcn's). Anatomy: `list` → `trigger`. Inherits: `selection`, `list`, `control`.
 
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
@@ -1151,7 +1129,7 @@ State: `--nk-level-fill-now`, `--nk-level-fill-opacity`.
 
 ### slab
 
-Transient feedback on the game: item, prompt, progress, band (nk-slab*). Anatomy: `icon` → `delta` → `key` → `stack` → `line` → `band` → `band-title`. Inherits: `chip`, `control`, `meter`.
+Transient feedback on the game: item, prompt, progress (nk-slab*). Anatomy: `icon` → `delta` → `key` → `stack` → `line`. Inherits: `chip`, `control`, `meter`.
 
 | Lever | Type | Default | Range / values | What it moves |
 |---|---|---|---|---|
@@ -1181,13 +1159,6 @@ Transient feedback on the game: item, prompt, progress, band (nk-slab*). Anatomy
 | `--nk-slab-line-track` | color | `rgba(var(--hud-foreground-rgb), 0.18)` |  | Its track |
 | `--nk-slab-stack-width` | length | `20rem` |  | The progress stack's width |
 | `--nk-slab-stack-gap` | length | `calc(var(--nk-space-unit) * 2)` |  | Between its rows |
-| `--nk-slab-band-padding` | string | `calc(var(--nk-space-unit) * 3) calc(var(--nk-space-unit) * 6)` |  | The band's padding |
-| `--nk-slab-band-gap` | length | `var(--nk-space-unit)` |  | Between its lines |
-| `--nk-slab-band-bg` | color | `rgba(var(--scrim-rgb), 0.62)` |  | The game, darkened |
-| `--nk-slab-band-tint` | number | `0.3` | 0–1 | The tone's alpha over the band |
-| `--nk-slab-band-edge` | number | `0.6` | 0–1 | The tone's alpha on its edges |
-| `--nk-slab-band-fg` | color | `var(--hud-foreground)` |  | Text |
-| `--nk-slab-band-title-size` | length | `var(--nk-text-section)` |  | The band's line |
 
 State: `--nk-slab-fill`, `--nk-slab-stroke`, `--nk-slab-progress`, `--nk-slab-line-fill`.
 
