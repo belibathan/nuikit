@@ -4465,7 +4465,7 @@
     {
       "name": "vital-chip",
       "title": "Vital Chip",
-      "doc": "The HUD status chip as composable parts (Row, Root, Shape, Icon, Label, Pop, Letter): a Glyph face over a plate that slides out with the name and value, the level as a liquid in the face, white when active.",
+      "doc": "The HUD status chip as composable parts (Row, Root, Shape, Icon, Label, Letter): a Glyph face over a plate that slides out with the name and value, the level as a liquid in the face, white when active.",
       "since": "unreleased",
       "status": "stable",
       "kind": "component",
