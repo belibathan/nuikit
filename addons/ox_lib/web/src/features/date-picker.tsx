@@ -123,7 +123,7 @@ export function DatePicker({
       variant={selected ? "default" : "ghost"}
       disabled={off}
       onClick={pick}
-      className="h-(--cell-size) px-0 font-normal nk-num"
+      className="h-(--cell-size) px-0 nk-num"
     >
       {label}
     </Button>

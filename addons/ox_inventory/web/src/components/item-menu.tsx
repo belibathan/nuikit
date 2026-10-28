@@ -61,7 +61,7 @@ export function ItemMenu() {
             <ItemImage src={itemImage(item)} name={item.name} className="size-8 shrink-0" />
             <span className="flex min-w-0 flex-col">
               <span className="nk-title truncate">{itemLabel(item)}</span>
-              {item.count && item.count > 1 ? <span className="nk-label nk-num font-normal text-muted-foreground">×{item.count.toLocaleString("en-US")}</span> : null}
+              {item.count && item.count > 1 ? <span className="nk-label nk-num text-muted-foreground">×{item.count.toLocaleString("en-US")}</span> : null}
             </span>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />

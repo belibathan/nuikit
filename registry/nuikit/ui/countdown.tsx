@@ -33,18 +33,17 @@ import { useLinearRun } from "@/hooks/use-linear-run"
  *   clock pulses; tones use the shared vocabulary (danger = destructive) through toneVars(), `hue` a role.
  */
 
-// Display type in the numeric face: nk-display's size, weight and tracking, the numbers' font.
-// The line-height lives in each size: tailwind-merge treats a font size as overriding an earlier
-// leading-*, so a base leading-none would be dropped (the hero clock then got a tall line box).
-const countdownVariants = cva("nk-display tabular-nums [font-family:var(--nk-type-num-family)]!", {
+// The figure text style (a number that is the point: num voice, display weight, tabular, leading 1). The sizes
+// re-point --nk-text-figure, the size the style reads.
+const countdownVariants = cva("nk-text-figure", {
   variants: {
     size: {
       /** A clock in a row or a slab: the HUD value size. */
-      sm: "[--nk-display-size:var(--nk-text-hud)] leading-none",
-      /** nk-display (36px in Graphite): a number that is the point of a panel. */
-      default: "leading-none",
+      sm: "[--nk-text-figure:var(--nk-text-hud)]",
+      /** The display size (36px in Graphite): a number that is the point of a panel. */
+      default: "",
       /** The full-screen clock (death, loading): 3.5× display, at most 8rem (128px at 1080p). */
-      hero: "[--nk-display-size:min(8rem,calc(var(--nk-text-display)*3.5))] leading-none",
+      hero: "[--nk-text-figure:min(8rem,calc(var(--nk-text-display)*3.5))]",
     },
   },
   defaultVariants: {

@@ -121,9 +121,14 @@ and Escape belong to the surface and its resource. `nk-panel` stays for small po
 - **Spacing.** Surface padding `--nk-pad-surface` (space-6); header space-6/6/4, footer space-4/6/6 with no rule above it.
   Rows: `--nk-row-pad-y` space-2, `--nk-row-pad-x` space-3, `--nk-row-gap` space-4; rows sit space-1 apart with no
   hairlines between them.
-- **Type.** Titles, row titles, labels, keys, buttons and numbers in the display voice (`--nk-type-{title,label,scan,num}-*`,
-  `--nk-row-title-size` 1rem); descriptions in the body voice (`--nk-row-desc-size` .875rem, muted). Notice titles are
-  sentence-led whatever the script sent.
+- **Type is text styles.** Eleven styles, one per role, generated once into kit.css from
+  `packages/core/src/spec/text-styles.ts`: `nk-text-display`, `-section`, `-title`, `-label`, `-caption`, `-scan`,
+  `-num`, `-figure`, `-hud`, `-body`, `-desc` (the older `nk-title`, `nk-label`, `nk-caption`, `nk-scan`, `nk-num`,
+  `nk-body`, `nk-display` are the same styles). Each is a voice (`--nk-type-<voice>-*`: face, slant, weight, tracking,
+  case, overhang pad) at a size and a leading. A component or screen picks a style, or in its own CSS a voice's
+  variables, and never sets a font-style, family, weight, tracking or case of its own: slant comes only from the voices,
+  and a test fails anything else. The table is in [`design/levers.md`](design/levers.md). Notice titles are sentence-led
+  whatever the script sent.
 - **Selection and focus: one language.** No focus rings anywhere: keyboard, controller and programmatic focus render the
   pointer's hover state (`data-lit`). The lit row, menu item or tab **is** the primary control face (`--nk-control-primary-*`,
   slanted or walled only if the theme says so); one `Selection` per list slides between items by transform, a size change

@@ -132,7 +132,7 @@ body.inv-dragging * {
   text-align: center;
   font-size: 0.75rem;
   line-height: 1rem;
-  font-weight: 500;
+  font-weight: var(--nk-type-weight-strong);
 }
 
 /* durability, traced along the tile's outline (components/outline.tsx) */
@@ -268,7 +268,7 @@ html:is([data-nk-motion="reduced"], [data-nk-motion="off"]) .inv-slot[data-lande
   padding: 0 1rem;
   box-shadow: inset 0 0 0 var(--nk-line-width) transparent;
   font-size: 0.9375rem;
-  font-weight: 500;
+  font-weight: var(--nk-type-weight-strong);
 }
 .inv-zone-icon {
   display: flex;
@@ -295,7 +295,7 @@ html:is([data-nk-motion="reduced"], [data-nk-motion="off"]) .inv-slot[data-lande
   border: 0;
   text-align: center;
   font-size: 0.9375rem;
-  font-weight: 500;
+  font-weight: var(--nk-type-weight-strong);
   box-shadow: none;
 }
 .inv-amount:focus-visible {
@@ -369,7 +369,7 @@ html:is([data-nk-motion="reduced"], [data-nk-motion="off"]) .inv-slot[data-lande
   margin-top: 0.25rem;
 }
 .inv-md strong {
-  font-weight: 500;
+  font-weight: var(--nk-type-weight-strong);
   color: var(--popover-foreground);
 }
 .inv-md a {

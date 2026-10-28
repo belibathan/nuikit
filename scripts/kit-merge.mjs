@@ -44,7 +44,7 @@ const PAINT = {
 const LAYOUT = new Set([
   "border-radius", "box-shadow", "text-shadow", "filter", "border", "border-top", "border-bottom", "background-image",
   "display", "position", "top", "right", "bottom", "left", "width", "height", "min-width", "min-height",
-  "padding", "padding-left", "margin-left", "margin-top", "margin-inline", "margin-block", "gap", "flex", "flex-direction",
+  "padding", "padding-left", "padding-inline-end", "margin-left", "margin-top", "margin-inline", "margin-block", "gap", "flex", "flex-direction",
   "align-items", "justify-content", "text-align", "white-space", "overflow", "overflow-y", "scrollbar-width", "scrollbar-gutter",
   "clip-path", "transition-property", "transition-duration", "transition-timing-function", "transition", "animation",
   "animation-delay", "will-change",

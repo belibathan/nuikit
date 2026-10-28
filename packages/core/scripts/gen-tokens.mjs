@@ -1,5 +1,5 @@
 // The token generator: reads the spec (src/spec) and writes everything derived from it.
-//   packages/create-nuikit/kit.css   the block between the @generated markers (lever defaults + re-derivations)
+//   packages/create-nuikit/kit.css   the blocks between the @generated markers (lever defaults + re-derivations; the text styles)
 //   src/tokens.generated.ts           the tables compileTheme validates against, the Lever union, ANATOMY
 //   spec/migration.json               old name → new name, for scripts/migrate-levers.mjs
 //   tokens/nuikit.levers.json         DTCG, every lever with $extensions.nuikit (tier, scope, part, range)
@@ -21,7 +21,7 @@ const tmp = path.join(core, "node_modules", ".cache", "nuikit-spec.mjs");
 fs.mkdirSync(path.dirname(tmp), { recursive: true });
 await esbuild.build({ entryPoints: [path.join(core, "src/spec/index.ts")], bundle: true, format: "esm", platform: "neutral", outfile: tmp, logLevel: "error" });
 const spec = await import(`${pathToFileURL(tmp).href}?t=${Date.now()}`);
-const { LEVERS, STATE, ANATOMY, COMPONENTS, BY_PATH, pathCss } = spec;
+const { LEVERS, STATE, ANATOMY, COMPONENTS, BY_PATH, TEXT_STYLES, pathCss } = spec;
 
 // ─────────────────────────────────────────── values
 
@@ -91,6 +91,47 @@ const END = "/* @end generated levers */";
     next = kit.slice(0, eol + 1) + "\n" + block + "\n" + kit.slice(eol + 1);
   }
   write(kitPath, next);
+}
+
+// (a2) kit.css: the text styles (src/spec/text-styles.ts), one @utility each plus their older names
+const TS_START = "/* @generated text styles: packages/core/scripts/gen-tokens.mjs from packages/core/src/spec/text-styles.ts. Never edit by hand. */";
+const TS_END = "/* @end generated text styles */";
+export function textStyleDecls(st) {
+  const v = (p) => {
+    if (!BY_PATH.has(p)) throw new Error(`text style: no lever ${p}`);
+    return `var(${pathCss(p)})`;
+  };
+  const voice = (prop) => v(`type.${st.voice}.${prop}`);
+  const imp = st.important ? " !important" : "";
+  const d = [
+    `font-family: ${voice("family")};`,
+    `font-style: ${voice("style")};`,
+    ...(st.size ? [`font-size: ${v(st.size)}${imp};`] : []),
+    ...(st.leading ? [`line-height: ${v(st.leading)}${imp};`] : []),
+    `font-weight: ${st.weight ? v(st.weight) : voice("weight")};`,
+    `letter-spacing: ${st.tracking ? v(st.tracking) : voice("tracking")};`,
+    `text-transform: ${st.case ? v(st.case) : voice("case")};`,
+  ];
+  if (st.pad && BY_PATH.has(`type.${st.voice}.pad`)) d.push(`padding-inline-end: ${voice("pad")};`);
+  if (st.tabular) d.push("font-variant-numeric: tabular-nums;");
+  if (st.muted) d.push("color: var(--muted-foreground);");
+  return d;
+}
+{
+  const lines = [TS_START];
+  for (const [name, st] of Object.entries(TEXT_STYLES)) {
+    const decls = textStyleDecls(st).map((x) => `  ${x}`).join("\n");
+    const fam = st.modifier ? "" : " @merge nk-type";
+    lines.push(`/* ${st.description}.${fam} */`, `@utility nk-text-${name} {`, decls, "}");
+    for (const alias of st.aliases ?? []) lines.push(`/* nk-text-${name}, by its older name.${fam} */`, `@utility ${alias} {`, decls, "}");
+  }
+  lines.push(TS_END);
+  const kitPath = path.join(repo, "packages/create-nuikit/kit.css");
+  const kit = outputs.get(path.resolve(kitPath)) ?? fs.readFileSync(kitPath, "utf8");
+  const a = kit.indexOf(TS_START);
+  const b = kit.indexOf(TS_END);
+  if (a === -1 || b === -1) throw new Error("kit.css: the text-style markers are missing");
+  write(kitPath, kit.slice(0, a) + lines.join("\n") + kit.slice(b + TS_END.length));
 }
 
 // (b) tokens.generated.ts
@@ -213,7 +254,22 @@ const DTCG_TYPE = { color: "color", length: "dimension", angle: "number", time: 
     "",
   );
   table(core);
-  const PRIMITIVES = ["screen", "zone", "region", "grid", "tile", "panel", "row", "list", "selection", "text", "chip", "level", "dial", "slab"];
+  md.push(
+    "## The language: the text styles",
+    "",
+    "One complete style per role (`packages/core/src/spec/text-styles.ts`), written once into kit.css as `nk-text-<style>`. A style is a",
+    "voice (face, slant, weight, tracking, case, overhang pad: `--nk-type-<voice>-*`) at a size and a leading; slant comes only from",
+    "the voice, so a component or a screen picks a style and never sets a font-style, family, weight, tracking or case of its own.",
+    "",
+    "| Style | Utility | Voice | Size | Leading | Overrides | For |",
+    "|---|---|---|---|---|---|---|",
+    ...Object.entries(TEXT_STYLES).map(([n, st]) => {
+      const o = [st.weight && `weight ${st.weight}`, st.tracking && `tracking ${st.tracking}`, st.case && `case ${st.case}`, st.tabular && "tabular", st.muted && "muted"].filter(Boolean).join(", ");
+      return `| ${n} | \`nk-text-${n}\`${(st.aliases ?? []).map((a) => `, \`${a}\``).join("")} | ${st.voice} | ${st.size ? `\`${st.size}\`` : "context"} | ${st.leading ? `\`${st.leading}\`` : "context"} | ${cell(o || "")} | ${cell(st.description)} |`;
+    }),
+    "",
+  );
+  const PRIMITIVES = ["screen", "zone", "region", "grid", "control", "panel", "row", "list", "selection", "text", "chip", "level", "dial", "slab"];
   md.push(
     "## The language: the primitives",
     "",

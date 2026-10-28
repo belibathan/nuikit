@@ -1,7 +1,7 @@
 /** Every component, in the order the catalog lists them. One file per family. */
 import { chip, dial, gauge, level, meter, ring, slab, speedometer } from "./hud";
 import { field, list, menuRow, row, selection, stepper, text } from "./rows";
-import { caption, confirm, display, edgeSheet, notice, panel } from "./surfaces";
+import { confirm, edgeSheet, notice, panel } from "./surfaces";
 import { dialogShell } from "./dialog-shell";
 import { emptyState } from "./empty-state";
 import { formField } from "./form-field";
@@ -19,8 +19,6 @@ export const COMPONENTS = {
   grid,
   control,
   panel,
-  display,
-  caption,
   row,
   list,
   "menu-row": menuRow,

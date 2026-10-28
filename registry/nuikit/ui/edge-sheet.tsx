@@ -51,7 +51,7 @@ import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/
  */
 
 /** nk-title one step up: the heading face at section size (the pause title's family, one step down). */
-const TITLE = { "--nk-panel-title-size": "var(--nk-text-section)" } as React.CSSProperties
+const TITLE = { "--nk-text-title": "var(--nk-text-section)" } as React.CSSProperties
 
 type EdgeSheetProps = Omit<React.ComponentProps<typeof SheetContent>, "title" | "side"> & {
   open: boolean

@@ -1797,6 +1797,15 @@ var NuikitTheme = (() => {
       "description": "Full-screen titles"
     },
     {
+      "name": "nk-text-figure",
+      "path": "text.figure",
+      "tier": "identity",
+      "scope": "text",
+      "type": "length",
+      "default": "var(--nk-text-display)",
+      "description": "A number that is the point (the figure style); a component re-points it for its size"
+    },
+    {
       "name": "nk-text-hud",
       "path": "text.hud",
       "tier": "identity",
@@ -1840,6 +1849,45 @@ var NuikitTheme = (() => {
       "type": "length",
       "default": "1.25rem",
       "description": "Body-size text: rows, notices, slabs"
+    },
+    {
+      "name": "nk-leading-title",
+      "path": "leading.title",
+      "tier": "identity",
+      "scope": "leading",
+      "type": "number",
+      "default": "1.3",
+      "description": "Titles and sections (a ratio of the size)",
+      "range": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "nk-leading-display",
+      "path": "leading.display",
+      "tier": "identity",
+      "scope": "leading",
+      "type": "number",
+      "default": "1.15",
+      "description": "Full-screen titles and HUD values (a ratio of the size)",
+      "range": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "nk-leading-figure",
+      "path": "leading.figure",
+      "tier": "identity",
+      "scope": "leading",
+      "type": "number",
+      "default": "1",
+      "description": "A number that is the point: a clock, a balance, the speed (a ratio of the size)",
+      "range": [
+        0.8,
+        2
+      ]
     },
     {
       "name": "nk-shape-skew",
@@ -4263,16 +4311,6 @@ var NuikitTheme = (() => {
       "part": "header"
     },
     {
-      "name": "nk-panel-title-size",
-      "path": "panel.title.size",
-      "tier": "component",
-      "scope": "panel",
-      "type": "length",
-      "default": "var(--nk-text-title)",
-      "description": "A panel title's size",
-      "part": "title"
-    },
-    {
       "name": "nk-panel-body-padding",
       "path": "panel.body.padding",
       "tier": "component",
@@ -4331,87 +4369,6 @@ var NuikitTheme = (() => {
       "default": "var(--brand)",
       "description": "The marks' colour",
       "part": "actions"
-    },
-    {
-      "name": "nk-display-size",
-      "path": "display.size",
-      "tier": "component",
-      "scope": "display",
-      "type": "length",
-      "default": "var(--nk-text-display)",
-      "description": "Size"
-    },
-    {
-      "name": "nk-display-weight",
-      "path": "display.weight",
-      "tier": "component",
-      "scope": "display",
-      "type": "string",
-      "default": "var(--nk-type-weight-display)",
-      "description": "Weight"
-    },
-    {
-      "name": "nk-display-tracking",
-      "path": "display.tracking",
-      "tier": "component",
-      "scope": "display",
-      "type": "length",
-      "default": "var(--nk-type-tracking-display)",
-      "description": "Letter-spacing"
-    },
-    {
-      "name": "nk-display-case",
-      "path": "display.case",
-      "tier": "component",
-      "scope": "display",
-      "type": "string",
-      "default": "var(--nk-type-case)",
-      "description": "Case"
-    },
-    {
-      "name": "nk-caption-font",
-      "path": "caption.font",
-      "tier": "component",
-      "scope": "caption",
-      "type": "string",
-      "default": "var(--nk-type-label-family)",
-      "description": "Face"
-    },
-    {
-      "name": "nk-caption-size",
-      "path": "caption.size",
-      "tier": "component",
-      "scope": "caption",
-      "type": "length",
-      "default": "var(--nk-text-label)",
-      "description": "Size"
-    },
-    {
-      "name": "nk-caption-weight",
-      "path": "caption.weight",
-      "tier": "component",
-      "scope": "caption",
-      "type": "string",
-      "default": "var(--nk-type-weight-strong)",
-      "description": "Weight"
-    },
-    {
-      "name": "nk-caption-case",
-      "path": "caption.case",
-      "tier": "component",
-      "scope": "caption",
-      "type": "string",
-      "default": "var(--nk-type-case)",
-      "description": "Case"
-    },
-    {
-      "name": "nk-caption-tracking",
-      "path": "caption.tracking",
-      "tier": "component",
-      "scope": "caption",
-      "type": "length",
-      "default": "var(--nk-type-tracking-label)",
-      "description": "Letter-spacing"
     },
     {
       "name": "nk-row-height",

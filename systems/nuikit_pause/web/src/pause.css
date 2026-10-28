@@ -70,7 +70,7 @@
 }
 /* a sub-page title: the heading face at section size, one step under Home's display title */
 .pause-page-title {
-  --nk-panel-title-size: var(--nk-text-section);
+  --nk-text-title: var(--nk-text-section);
 }
 /* the map's camera buttons: a slim strip of the game chip surface on the open area's right edge */
 .pause-controls {
@@ -189,7 +189,7 @@
   color: var(--hud);
   font-size: 0.6875rem;
   line-height: 1rem;
-  font-weight: 600;
+  font-weight: var(--nk-type-weight-strong);
   text-align: center;
 }
 .pause-blip-label {
@@ -207,13 +207,13 @@
   white-space: nowrap;
   font-size: 0.8125rem;
   line-height: 1.125rem;
-  font-weight: 600;
+  font-weight: var(--nk-type-weight-strong);
   transform: translateY(-50%);
 }
 .pause-blip-kind {
   font-size: 0.6875rem;
   line-height: 0.875rem;
-  font-weight: 500;
+  font-weight: var(--nk-type-weight-body);
   opacity: 0.7;
 }
 [data-open] > .pause-pin-center > .pause-blip-label {

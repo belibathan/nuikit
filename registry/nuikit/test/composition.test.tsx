@@ -50,7 +50,7 @@ describe("foundation", () => {
   })
 
   it("Text is a role class on the value ladder", () => {
-    expect(html(<Text variant="num" size="md">1</Text>)).toMatch(/class="nk-num text-\(length:--nk-text-hud\)/)
+    expect(html(<Text variant="num" size="md">1</Text>)).toMatch(/class="nk-text-num text-\(length:--nk-text-hud\)/)
   })
 })
 
@@ -109,8 +109,8 @@ describe("composites", () => {
   })
 
   it("Stat's value and Money are Text in the num role", () => {
-    expect(dom(<Stat label="Cash" value="$1" />).has('data-slot="stat-value"', 'data-variant="num"', "nk-num")).toBe(true)
-    expect(dom(<Money amount={5} currency="USD" locale="en-US" />).has('data-slot="money"', 'data-variant="num"', "nk-num")).toBe(true)
+    expect(dom(<Stat label="Cash" value="$1" />).has('data-slot="stat-value"', 'data-variant="num"', "nk-text-num")).toBe(true)
+    expect(dom(<Money amount={5} currency="USD" locale="en-US" />).has('data-slot="money"', 'data-variant="num"', "nk-text-num")).toBe(true)
   })
 
 })

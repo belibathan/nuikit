@@ -167,10 +167,11 @@ export const text: Group = {
     base: length("1rem", "Body size; every step derives from it", { was: ["nk-text-base"] }),
     key: length("0.8125rem", "The scan voice (keys, buttons, tabs)", { was: ["nk-text-key"] }),
     body: length(ref("text.base"), "Sentences", { was: ["nk-text-body"] }),
-    label: length(css`max(0.8125rem, calc(${ref("text.base")} / ${ref("type.ratio")}))`, "Labels and captions", { was: ["nk-text-label"] }),
-    title: length(css`calc(${ref("text.base")} * (1 + (${ref("type.ratio")} - 1) / 2))`, "Panel titles (≈ base × √ratio)", { was: ["nk-text-title"] }),
+    label: length(css`max(0.8125rem, calc(${ref("text.base")} / ${ref("type.ratio")}))`, "Labels and captions", { was: ["nk-text-label", "nk-caption-size", "nk-label-size"] }),
+    title: length(css`calc(${ref("text.base")} * (1 + (${ref("type.ratio")} - 1) / 2))`, "Panel titles (≈ base × √ratio)", { was: ["nk-text-title", "nk-panel-title-size", "nk-heading-size"] }),
     section: length(css`calc(${ref("text.base")} * ${ref("type.ratio")} * ${ref("type.ratio")})`, "Section and sheet titles", { was: ["nk-text-section"] }),
-    display: length(css`calc(${ref("text.base")} * ${ref("type.ratio")} * ${ref("type.ratio")} * ${ref("type.ratio")} * ${ref("type.ratio")} * 1.1)`, "Full-screen titles", { was: ["nk-text-display"] }),
+    display: length(css`calc(${ref("text.base")} * ${ref("type.ratio")} * ${ref("type.ratio")} * ${ref("type.ratio")} * ${ref("type.ratio")} * 1.1)`, "Full-screen titles", { was: ["nk-text-display", "nk-display-size"] }),
+    figure: length(ref("text.display"), "A number that is the point (the figure style); a component re-points it for its size", {}),
     hud: length(css`max(1.125rem, calc(${ref("text.base")} * ${ref("type.ratio")}))`, "HUD values read in motion", { was: ["nk-hud-value-size"] }),
     row: length("1.125rem", "A row or notice title (the label voice)", { was: ["nk-row-title-size"] }),
     desc: length("0.875rem", "A row or notice description (the body voice)", { was: ["nk-row-desc-size"] }),
@@ -184,6 +185,9 @@ export const leading: Group = {
   levers: {
     tight: length("1rem", "Small text: captions, labels, descriptions", { was: ["nk-leading-tight"] }),
     normal: length("1.25rem", "Body-size text: rows, notices, slabs", { was: ["nk-leading-normal"] }),
+    title: number(1.3, "Titles and sections (a ratio of the size)", { range: [1, 2] }),
+    display: number(1.15, "Full-screen titles and HUD values (a ratio of the size)", { range: [1, 2] }),
+    figure: number(1, "A number that is the point: a clock, a balance, the speed (a ratio of the size)", { range: [0.8, 2] }),
   },
 };
 
@@ -200,7 +204,7 @@ export const shape: Group = {
 };
 
 const voice = (family: string, weight: Value, tracking: Value, kase: boolean, slant: boolean, pad: boolean, what: string, was: string): Record<string, LeverDef> => ({
-  family: font(ref(family), `Face of the ${what}`, { was: [`nk-type-${was}-family`, ...(was === "title" ? ["nk-heading-font"] : was === "num" ? ["nk-num-font"] : [])] }),
+  family: font(ref(family), `Face of the ${what}`, { was: [`nk-type-${was}-family`, ...(was === "title" ? ["nk-heading-font"] : was === "num" ? ["nk-num-font"] : was === "label" ? ["nk-caption-font", "nk-label-font"] : [])] }),
   style: keyword(["normal", "italic"], slant ? ref("type.slant") : lit("normal"), `Slant of the ${what}`, { was: [`nk-type-${was}-style`] }),
   weight: number(weight, `Weight of the ${what}`, { range: [100, 900], was: [`nk-type-${was}-weight`, ...(was === "title" ? ["nk-heading-weight"] : [])] }),
   tracking: length(tracking, `Letter-spacing of the ${what}`, { was: [`nk-type-${was}-tracking`, ...(was === "title" ? ["nk-heading-tracking"] : was === "num" ? ["nk-num-tracking"] : [])] }),
@@ -215,11 +219,11 @@ export const type: Group = {
   levers: {
     ratio: number(1.25, "Step between type sizes: 1.125 calm … 1.333 dramatic", { range: [1, 1.6], was: ["nk-type-ratio", "nk-ratio"], core: true }),
     "weight-body": number(400, "Sentences", { range: [100, 900], was: ["nk-weight-body"] }),
-    "weight-strong": number(500, "Captions, chips, slabs: text that must hold its own on the game", { range: [100, 900], was: ["nk-weight-strong"] }),
-    "weight-display": number(700, "Full-screen titles and big numbers", { range: [100, 900], was: ["nk-weight-display"] }),
-    "tracking-display": length("-0.02em", "Letter-spacing of full-screen titles", { was: ["nk-tracking-display"] }),
-    "tracking-label": length("0.06em", "Letter-spacing of captions", { was: ["nk-tracking-label"] }),
-    case: keyword(["none", "uppercase"], "none", "Anything scanned (keys, titles, labels, captions) in caps or as written", { attr: "case", was: ["nk-label-case", "nk-heading-case"], core: true }),
+    "weight-strong": number(500, "Captions, chips, slabs: text that must hold its own on the game", { range: [100, 900], was: ["nk-weight-strong", "nk-caption-weight", "nk-label-weight"] }),
+    "weight-display": number(700, "Full-screen titles and big numbers", { range: [100, 900], was: ["nk-weight-display", "nk-display-weight"] }),
+    "tracking-display": length("-0.02em", "Letter-spacing of full-screen titles", { was: ["nk-tracking-display", "nk-display-tracking"] }),
+    "tracking-label": length("0.06em", "Letter-spacing of captions", { was: ["nk-tracking-label", "nk-caption-tracking"] }),
+    case: keyword(["none", "uppercase"], "none", "Anything scanned (keys, titles, labels, captions) in caps or as written", { attr: "case", was: ["nk-label-case", "nk-heading-case", "nk-display-case", "nk-caption-case", "nk-caption-transform"], core: true }),
     slant: keyword(["normal", "italic"], "normal", "The scanned voices upright or italic (a real italic where the face has one)", { attr: "slant", was: ["nk-display-style"], core: true }),
     overhang: length("0em", "Trailing pad of a slanted voice (the italic's overhang); 0em when upright", { was: [] }),
   },

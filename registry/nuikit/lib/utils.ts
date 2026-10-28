@@ -13,21 +13,32 @@ type KitClassGroup =
   | "nk-panel-title-row"
   | "nk-field"
   | "nk-field-label"
+  | "nk-text-display"
+  | "nk-display"
+  | "nk-text-section"
+  | "nk-text-title"
   | "nk-title"
+  | "nk-text-label"
   | "nk-label"
-  | "nk-scan"
-  | "nk-body"
+  | "nk-text-caption"
   | "nk-caption"
+  | "nk-text-scan"
+  | "nk-scan"
+  | "nk-text-num"
+  | "nk-num"
+  | "nk-text-figure"
+  | "nk-text-hud"
+  | "nk-text-body"
+  | "nk-body"
+  | "nk-text-desc"
   | "nk-row"
   | "nk-list"
-  | "nk-num"
   | "nk-chip"
   | "nk-chip-active"
   | "nk-hud"
   | "nk-track"
   | "nk-shadow"
   | "nk-on-game"
-  | "nk-display"
   | "nk-slab"
   | "nk-slab-icon"
   | "nk-slab-delta"
@@ -68,21 +79,32 @@ const twMerge = extendTailwindMerge<KitClassGroup>({
       "nk-panel-title-row": ["nk-panel-title-row"],
       "nk-field": ["nk-field"],
       "nk-field-label": ["nk-field-label"],
+      "nk-text-display": ["nk-text-display"],
+      "nk-display": ["nk-display"],
+      "nk-text-section": ["nk-text-section"],
+      "nk-text-title": ["nk-text-title"],
       "nk-title": ["nk-title"],
+      "nk-text-label": ["nk-text-label"],
       "nk-label": ["nk-label"],
-      "nk-scan": ["nk-scan"],
-      "nk-body": ["nk-body"],
+      "nk-text-caption": ["nk-text-caption"],
       "nk-caption": ["nk-caption"],
+      "nk-text-scan": ["nk-text-scan"],
+      "nk-scan": ["nk-scan"],
+      "nk-text-num": ["nk-text-num"],
+      "nk-num": ["nk-num"],
+      "nk-text-figure": ["nk-text-figure"],
+      "nk-text-hud": ["nk-text-hud"],
+      "nk-text-body": ["nk-text-body"],
+      "nk-body": ["nk-body"],
+      "nk-text-desc": ["nk-text-desc"],
       "nk-row": ["nk-row"],
       "nk-list": ["nk-list"],
-      "nk-num": ["nk-num"],
       "nk-chip": ["nk-chip"],
       "nk-chip-active": ["nk-chip-active"],
       "nk-hud": ["nk-hud"],
       "nk-track": ["nk-track"],
       "nk-shadow": ["nk-shadow"],
       "nk-on-game": ["nk-on-game"],
-      "nk-display": ["nk-display"],
       "nk-slab": ["nk-slab"],
       "nk-slab-icon": ["nk-slab-icon"],
       "nk-slab-delta": ["nk-slab-delta"],
@@ -117,19 +139,30 @@ const twMerge = extendTailwindMerge<KitClassGroup>({
       "nk-panel-header": ["nk-panel-header-stack"],
       "nk-panel-header-stack": ["nk-panel-header"],
       "nk-field-label": ["font-family", "font-size", "font-weight", "leading", "text-transform", "tracking"],
-      "nk-title": ["font-family", "font-size", "font-style", "font-weight", "leading", "nk-body", "nk-caption", "nk-display", "nk-label", "nk-scan", "text-transform", "tracking"],
-      "nk-label": ["font-family", "font-size", "font-weight", "leading", "nk-body", "nk-caption", "nk-display", "nk-scan", "nk-title", "text-color"],
-      "nk-scan": ["font-family", "font-size", "font-style", "font-weight", "leading", "nk-body", "nk-caption", "nk-display", "nk-label", "nk-title", "text-transform", "tracking"],
-      "nk-body": ["font-family", "font-size", "font-style", "font-weight", "leading", "nk-caption", "nk-display", "nk-label", "nk-scan", "nk-title", "text-transform", "tracking"],
-      "nk-caption": ["font-family", "font-size", "font-weight", "leading", "nk-body", "nk-display", "nk-label", "nk-scan", "nk-title", "text-color", "text-transform", "tracking"],
+      "nk-text-display": ["font-family", "font-size", "font-style", "font-weight", "leading", "nk-body", "nk-caption", "nk-display", "nk-label", "nk-scan", "nk-text-body", "nk-text-caption", "nk-text-desc", "nk-text-figure", "nk-text-hud", "nk-text-label", "nk-text-scan", "nk-text-section", "nk-text-title", "nk-title", "text-transform", "tracking"],
+      "nk-display": ["font-family", "font-size", "font-style", "font-weight", "leading", "nk-body", "nk-caption", "nk-label", "nk-scan", "nk-text-body", "nk-text-caption", "nk-text-desc", "nk-text-display", "nk-text-figure", "nk-text-hud", "nk-text-label", "nk-text-scan", "nk-text-section", "nk-text-title", "nk-title", "text-transform", "tracking"],
+      "nk-text-section": ["font-family", "font-size", "font-style", "font-weight", "leading", "nk-body", "nk-caption", "nk-display", "nk-label", "nk-scan", "nk-text-body", "nk-text-caption", "nk-text-desc", "nk-text-display", "nk-text-figure", "nk-text-hud", "nk-text-label", "nk-text-scan", "nk-text-title", "nk-title", "text-transform", "tracking"],
+      "nk-text-title": ["font-family", "font-size", "font-style", "font-weight", "leading", "nk-body", "nk-caption", "nk-display", "nk-label", "nk-scan", "nk-text-body", "nk-text-caption", "nk-text-desc", "nk-text-display", "nk-text-figure", "nk-text-hud", "nk-text-label", "nk-text-scan", "nk-text-section", "nk-title", "text-transform", "tracking"],
+      "nk-title": ["font-family", "font-size", "font-style", "font-weight", "leading", "nk-body", "nk-caption", "nk-display", "nk-label", "nk-scan", "nk-text-body", "nk-text-caption", "nk-text-desc", "nk-text-display", "nk-text-figure", "nk-text-hud", "nk-text-label", "nk-text-scan", "nk-text-section", "nk-text-title", "text-transform", "tracking"],
+      "nk-text-label": ["font-family", "font-size", "font-style", "font-weight", "leading", "nk-body", "nk-caption", "nk-display", "nk-label", "nk-scan", "nk-text-body", "nk-text-caption", "nk-text-desc", "nk-text-display", "nk-text-figure", "nk-text-hud", "nk-text-scan", "nk-text-section", "nk-text-title", "nk-title", "text-color", "text-transform", "tracking"],
+      "nk-label": ["font-family", "font-size", "font-style", "font-weight", "leading", "nk-body", "nk-caption", "nk-display", "nk-scan", "nk-text-body", "nk-text-caption", "nk-text-desc", "nk-text-display", "nk-text-figure", "nk-text-hud", "nk-text-label", "nk-text-scan", "nk-text-section", "nk-text-title", "nk-title", "text-color", "text-transform", "tracking"],
+      "nk-text-caption": ["font-family", "font-size", "font-style", "font-weight", "leading", "nk-body", "nk-caption", "nk-display", "nk-label", "nk-scan", "nk-text-body", "nk-text-desc", "nk-text-display", "nk-text-figure", "nk-text-hud", "nk-text-label", "nk-text-scan", "nk-text-section", "nk-text-title", "nk-title", "text-color", "text-transform", "tracking"],
+      "nk-caption": ["font-family", "font-size", "font-style", "font-weight", "leading", "nk-body", "nk-display", "nk-label", "nk-scan", "nk-text-body", "nk-text-caption", "nk-text-desc", "nk-text-display", "nk-text-figure", "nk-text-hud", "nk-text-label", "nk-text-scan", "nk-text-section", "nk-text-title", "nk-title", "text-color", "text-transform", "tracking"],
+      "nk-text-scan": ["font-family", "font-size", "font-style", "font-weight", "leading", "nk-body", "nk-caption", "nk-display", "nk-label", "nk-scan", "nk-text-body", "nk-text-caption", "nk-text-desc", "nk-text-display", "nk-text-figure", "nk-text-hud", "nk-text-label", "nk-text-section", "nk-text-title", "nk-title", "text-transform", "tracking"],
+      "nk-scan": ["font-family", "font-size", "font-style", "font-weight", "leading", "nk-body", "nk-caption", "nk-display", "nk-label", "nk-text-body", "nk-text-caption", "nk-text-desc", "nk-text-display", "nk-text-figure", "nk-text-hud", "nk-text-label", "nk-text-scan", "nk-text-section", "nk-text-title", "nk-title", "text-transform", "tracking"],
+      "nk-text-num": ["font-family", "font-style", "font-weight", "fvn-figure", "fvn-fraction", "fvn-normal", "fvn-ordinal", "fvn-slashed-zero", "fvn-spacing", "text-transform", "tracking"],
+      "nk-num": ["font-family", "font-style", "font-weight", "fvn-figure", "fvn-fraction", "fvn-normal", "fvn-ordinal", "fvn-slashed-zero", "fvn-spacing", "text-transform", "tracking"],
+      "nk-text-figure": ["font-family", "font-size", "font-style", "font-weight", "fvn-figure", "fvn-fraction", "fvn-normal", "fvn-ordinal", "fvn-slashed-zero", "fvn-spacing", "leading", "nk-body", "nk-caption", "nk-display", "nk-label", "nk-scan", "nk-text-body", "nk-text-caption", "nk-text-desc", "nk-text-display", "nk-text-hud", "nk-text-label", "nk-text-scan", "nk-text-section", "nk-text-title", "nk-title", "text-transform", "tracking"],
+      "nk-text-hud": ["font-family", "font-size", "font-style", "font-weight", "fvn-figure", "fvn-fraction", "fvn-normal", "fvn-ordinal", "fvn-slashed-zero", "fvn-spacing", "leading", "nk-body", "nk-caption", "nk-display", "nk-label", "nk-scan", "nk-text-body", "nk-text-caption", "nk-text-desc", "nk-text-display", "nk-text-figure", "nk-text-label", "nk-text-scan", "nk-text-section", "nk-text-title", "nk-title", "text-transform", "tracking"],
+      "nk-text-body": ["font-family", "font-size", "font-style", "font-weight", "leading", "nk-body", "nk-caption", "nk-display", "nk-label", "nk-scan", "nk-text-caption", "nk-text-desc", "nk-text-display", "nk-text-figure", "nk-text-hud", "nk-text-label", "nk-text-scan", "nk-text-section", "nk-text-title", "nk-title", "text-transform", "tracking"],
+      "nk-body": ["font-family", "font-size", "font-style", "font-weight", "leading", "nk-caption", "nk-display", "nk-label", "nk-scan", "nk-text-body", "nk-text-caption", "nk-text-desc", "nk-text-display", "nk-text-figure", "nk-text-hud", "nk-text-label", "nk-text-scan", "nk-text-section", "nk-text-title", "nk-title", "text-transform", "tracking"],
+      "nk-text-desc": ["font-family", "font-size", "font-style", "font-weight", "leading", "nk-body", "nk-caption", "nk-display", "nk-label", "nk-scan", "nk-text-body", "nk-text-caption", "nk-text-display", "nk-text-figure", "nk-text-hud", "nk-text-label", "nk-text-scan", "nk-text-section", "nk-text-title", "nk-title", "text-color", "text-transform", "tracking"],
       "nk-row": ["font-size", "leading"],
-      "nk-num": ["font-family", "font-style", "fvn-figure", "fvn-fraction", "fvn-normal", "fvn-ordinal", "fvn-slashed-zero", "fvn-spacing", "tracking"],
       "nk-chip": ["bg-color", "font-size", "font-weight", "leading", "nk-hud", "nk-panel", "nk-slab", "text-color"],
       "nk-chip-active": ["bg-color", "text-color"],
       "nk-hud": ["bg-color", "nk-chip", "nk-panel", "nk-slab", "text-color"],
       "nk-track": ["bg-color"],
       "nk-on-game": ["text-color"],
-      "nk-display": ["font-family", "font-size", "font-style", "font-weight", "leading", "nk-body", "nk-caption", "nk-label", "nk-scan", "nk-title", "text-transform", "tracking"],
       "nk-slab": ["bg-color", "font-size", "font-weight", "leading", "nk-chip", "nk-hud", "nk-panel", "text-color"],
       "nk-slab-icon": ["bg-color", "text-color"],
       "nk-slab-delta": ["font-family", "fvn-figure", "fvn-fraction", "fvn-normal", "fvn-ordinal", "fvn-slashed-zero", "fvn-spacing", "text-color", "tracking"],

@@ -925,6 +925,12 @@ export const GENERATED: { name: string; group: string; type: string; description
     "description": "Full-screen titles"
   },
   {
+    "name": "nk-text-figure",
+    "group": "kit",
+    "type": "dimension",
+    "description": "A number that is the point (the figure style); a component re-points it for its size"
+  },
+  {
     "name": "nk-text-hud",
     "group": "kit",
     "type": "dimension",
@@ -953,6 +959,24 @@ export const GENERATED: { name: string; group: string; type: string; description
     "group": "kit",
     "type": "dimension",
     "description": "Body-size text: rows, notices, slabs"
+  },
+  {
+    "name": "nk-leading-title",
+    "group": "kit",
+    "type": "number",
+    "description": "Titles and sections (a ratio of the size)"
+  },
+  {
+    "name": "nk-leading-display",
+    "group": "kit",
+    "type": "number",
+    "description": "Full-screen titles and HUD values (a ratio of the size)"
+  },
+  {
+    "name": "nk-leading-figure",
+    "group": "kit",
+    "type": "number",
+    "description": "A number that is the point: a clock, a balance, the speed (a ratio of the size)"
   },
   {
     "name": "nk-shape-skew",
@@ -2203,12 +2227,6 @@ export const GENERATED: { name: string; group: string; type: string; description
     "description": "Surface padding; the title a step off its hairline"
   },
   {
-    "name": "nk-panel-title-size",
-    "group": "kit",
-    "type": "dimension",
-    "description": "A panel title's size"
-  },
-  {
     "name": "nk-panel-body-padding",
     "group": "kit",
     "type": "number",
@@ -2243,60 +2261,6 @@ export const GENERATED: { name: string; group: string; type: string; description
     "group": "kit",
     "type": "color",
     "description": "The marks' colour"
-  },
-  {
-    "name": "nk-display-size",
-    "group": "kit",
-    "type": "dimension",
-    "description": "Size"
-  },
-  {
-    "name": "nk-display-weight",
-    "group": "kit",
-    "type": "number",
-    "description": "Weight"
-  },
-  {
-    "name": "nk-display-tracking",
-    "group": "kit",
-    "type": "dimension",
-    "description": "Letter-spacing"
-  },
-  {
-    "name": "nk-display-case",
-    "group": "kit",
-    "type": "number",
-    "description": "Case"
-  },
-  {
-    "name": "nk-caption-font",
-    "group": "kit",
-    "type": "number",
-    "description": "Face"
-  },
-  {
-    "name": "nk-caption-size",
-    "group": "kit",
-    "type": "dimension",
-    "description": "Size"
-  },
-  {
-    "name": "nk-caption-weight",
-    "group": "kit",
-    "type": "number",
-    "description": "Weight"
-  },
-  {
-    "name": "nk-caption-case",
-    "group": "kit",
-    "type": "number",
-    "description": "Case"
-  },
-  {
-    "name": "nk-caption-tracking",
-    "group": "kit",
-    "type": "dimension",
-    "description": "Letter-spacing"
   },
   {
     "name": "nk-row-height",

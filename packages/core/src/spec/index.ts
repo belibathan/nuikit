@@ -6,9 +6,10 @@ import { IDENTITY } from "./identity";
 import { cssName, type ComponentDef, type Group, type LeverDef, type StateDef, type Tier } from "./lang";
 import { SEMANTIC } from "./semantic";
 import { COMPONENTS } from "./components";
+import { TEXT_STYLES, type TextStyle, type Voice } from "./text-styles";
 
 export * from "./lang";
-export { IDENTITY, SEMANTIC, COMPONENTS };
+export { IDENTITY, SEMANTIC, COMPONENTS, TEXT_STYLES, type TextStyle, type Voice };
 
 export interface Lever extends LeverDef {
   /** control.face.color, space.2, @primary (palette), font.sans */

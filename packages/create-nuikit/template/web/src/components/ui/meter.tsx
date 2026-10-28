@@ -521,7 +521,7 @@ function Meter({
             {iconEl}
             {label !== undefined && <span data-slot="meter-label" className="nk-caption min-w-0 flex-1 truncate">{label}</span>}
             {valueText !== undefined && (
-              <span data-slot="meter-value" className={cn("nk-num ml-auto shrink-0 text-(length:--nk-caption-size) leading-4 [font-weight:var(--nk-type-label-weight)]", critical && "text-destructive")}>
+              <span data-slot="meter-value" className={cn("nk-num ml-auto shrink-0 text-(length:--nk-text-label) leading-4 [font-weight:var(--nk-type-label-weight)]", critical && "text-destructive")}>
                 {valueText}
               </span>
             )}

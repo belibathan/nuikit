@@ -12,7 +12,7 @@ function Row({ k, children, wrap }: { k: string; children: ReactNode; wrap?: boo
   return (
     <div className="flex items-baseline justify-between gap-4 text-xs leading-4">
       <span className="shrink-0 text-muted-foreground">{k}</span>
-      <span className={wrap ? "min-w-0 text-right font-medium" : "nk-num min-w-0 truncate text-right font-medium"}>{children}</span>
+      <span className={wrap ? "min-w-0 text-right [font-weight:var(--nk-type-weight-strong)]" : "nk-num min-w-0 truncate text-right"}>{children}</span>
     </div>
   );
 }

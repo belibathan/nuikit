@@ -46,7 +46,7 @@ function LoadingScreen({
         {h.logo && <img src={h.logo} alt="" className="size-12 rounded-(--nk-radius-control) object-contain" />}
         <div className="flex flex-col gap-1">
           {/* the server name: the screen's display moment (the identity's display face) */}
-          <h1 className="nk-display [--nk-display-size:var(--nk-text-section)]">{h.serverName || "Welcome"}</h1>
+          <h1 className="nk-text-section">{h.serverName || "Welcome"}</h1>
           {h.tagline && <p className="nk-label">{h.tagline}</p>}
         </div>
       </header>
@@ -164,7 +164,7 @@ function LoadingStatus({ load, player }: { load: LoadState; player?: string }) {
         <Stat size="display" align="end" label="Loaded" value={pct} meta="%" />
       </div>
       <Meter aria-label="Loading" value={pct} tone="foreground" size="sm" />
-      <div className="nk-label flex h-4 items-center justify-between gap-6 font-normal">
+      <div className="nk-label flex h-4 items-center justify-between gap-6">
         <span className="truncate">{detail}</span>
         {load.count > 0 && (
           <span className="nk-num shrink-0">

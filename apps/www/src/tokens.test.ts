@@ -58,3 +58,26 @@ describe("in-repo UIs see the registry (scripts/sync-template.mjs)", () => {
     expect(n).toBeGreaterThan(10);
   });
 });
+
+describe("slant lives only in the text styles (packages/core/src/spec/text-styles.ts)", () => {
+  it("no component, block, screen or override sets italic or a font-style of its own", async () => {
+    const fs = await import("node:fs");
+    const path = await import("node:path");
+    const root = path.resolve(__dirname, "../../..");
+    const dirs = ["registry/nuikit/ui", "registry/nuikit/blocks", ...["systems", "addons"].flatMap((g) => fs.readdirSync(path.join(root, g)).map((n) => `${g}/${n}/web/src`))];
+    const hits: string[] = [];
+    const walk = (d: string) => {
+      if (!fs.existsSync(d)) return;
+      for (const e of fs.readdirSync(d, { withFileTypes: true })) {
+        const f = path.join(d, e.name);
+        if (e.isDirectory()) walk(f);
+        else if (/\.(tsx?|css)$/.test(e.name) && e.name !== "index.css" && !f.endsWith(path.join("lib", "utils.ts"))) {
+          const code = fs.readFileSync(f, "utf8").replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:"'`])\/\/.*$/gm, "$1");
+          for (const m of code.matchAll(/italic|font-style:(?!\s*var\(--nk-type-)[^;]+|\[font-style:(?!var\(--nk-type-)/g)) hits.push(`${path.relative(root, f)}: ${m[0]}`);
+        }
+      }
+    };
+    for (const d of dirs) walk(path.join(root, d));
+    expect(hits).toEqual([]);
+  });
+});

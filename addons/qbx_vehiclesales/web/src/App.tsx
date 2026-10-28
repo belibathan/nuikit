@@ -255,7 +255,7 @@ export default function App() {
               </div>
               <div className="flex items-end justify-between gap-3">
                 <Stat size="display" label="Price" value={money(shown.price)} />
-                <span className="nk-label pb-1 font-normal">Paid from your bank</span>
+                <span className="nk-label pb-1">Paid from your bank</span>
               </div>
               {shown.takeBack && (
                 <div className="border-t pt-4">

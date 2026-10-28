@@ -70,12 +70,16 @@
     --nk-text-title: calc(var(--nk-text-base) * (1 + (var(--nk-type-ratio) - 1) / 2));
     --nk-text-section: calc(var(--nk-text-base) * var(--nk-type-ratio) * var(--nk-type-ratio));
     --nk-text-display: calc(var(--nk-text-base) * var(--nk-type-ratio) * var(--nk-type-ratio) * var(--nk-type-ratio) * var(--nk-type-ratio) * 1.1);
+    --nk-text-figure: var(--nk-text-display);
     --nk-text-hud: max(1.125rem, calc(var(--nk-text-base) * var(--nk-type-ratio)));
     --nk-text-row: 1.125rem;
     --nk-text-desc: 0.875rem;
     /* identity · leading */
     --nk-leading-tight: 1rem;
     --nk-leading-normal: 1.25rem;
+    --nk-leading-title: 1.3;
+    --nk-leading-display: 1.15;
+    --nk-leading-figure: 1;
     /* identity · shape */
     --nk-shape-skew: 0deg;
     --nk-shape-slab: 0deg;
@@ -321,24 +325,12 @@
     --nk-panel-width-lg: 24rem;
     --nk-panel-header-height: calc(3.25rem * var(--nk-density));
     --nk-panel-header-padding: var(--nk-gap-surface) var(--nk-gap-surface) var(--nk-space-4);
-    --nk-panel-title-size: var(--nk-text-title);
     --nk-panel-body-padding: var(--nk-space-3);
     --nk-panel-footer-padding: var(--nk-space-4) var(--nk-gap-surface) var(--nk-gap-surface);
     --nk-panel-footer-rule: none;
     --nk-panel-actions-bracket: 0px;
     --nk-panel-actions-bracket-width: calc(var(--nk-line-width) * 2);
     --nk-panel-actions-bracket-color: var(--brand);
-    /* component · display */
-    --nk-display-size: var(--nk-text-display);
-    --nk-display-weight: var(--nk-type-weight-display);
-    --nk-display-tracking: var(--nk-type-tracking-display);
-    --nk-display-case: var(--nk-type-case);
-    /* component · caption */
-    --nk-caption-font: var(--nk-type-label-family);
-    --nk-caption-size: var(--nk-text-label);
-    --nk-caption-weight: var(--nk-type-weight-strong);
-    --nk-caption-case: var(--nk-type-case);
-    --nk-caption-tracking: var(--nk-type-tracking-label);
     /* component · row */
     --nk-row-height: var(--nk-height-row);
     --nk-row-radius: var(--nk-radius-control);
@@ -847,35 +839,127 @@
   gap: 0.5rem;
   min-width: 0;
   min-height: 1.5rem;
-  font-family: var(--nk-caption-font);
-  font-size: var(--nk-caption-size);
+  font-family: var(--nk-type-label-family);
+  font-size: var(--nk-text-label);
   line-height: var(--nk-leading-tight, 1rem);
-  font-weight: var(--nk-caption-weight);
-  text-transform: var(--nk-caption-case);
-  letter-spacing: var(--nk-caption-tracking);
+  font-weight: var(--nk-type-weight-strong);
+  text-transform: var(--nk-type-case);
+  letter-spacing: var(--nk-type-tracking-label);
 }
-/* Title inside a panel header. @merge nk-type */
-@utility nk-title {
-  /* the title role (1.5): --nk-type-title-*, which default to the heading tokens */
+/* @generated text styles: packages/core/scripts/gen-tokens.mjs from packages/core/src/spec/text-styles.ts. Never edit by hand. */
+/* Full-screen titles: pause, loading, death. @merge nk-type */
+@utility nk-text-display {
   font-family: var(--nk-type-title-family);
   font-style: var(--nk-type-title-style);
-  /* !important: shadcn titles carry text-lg, which would otherwise win */
-  font-size: var(--nk-panel-title-size) !important;
+  font-size: var(--nk-text-display);
+  line-height: var(--nk-leading-display);
+  font-weight: var(--nk-type-weight-display);
+  letter-spacing: var(--nk-type-tracking-display);
+  text-transform: var(--nk-type-title-case);
+  padding-inline-end: var(--nk-type-title-pad);
+}
+/* nk-text-display, by its older name. @merge nk-type */
+@utility nk-display {
+  font-family: var(--nk-type-title-family);
+  font-style: var(--nk-type-title-style);
+  font-size: var(--nk-text-display);
+  line-height: var(--nk-leading-display);
+  font-weight: var(--nk-type-weight-display);
+  letter-spacing: var(--nk-type-tracking-display);
+  text-transform: var(--nk-type-title-case);
+  padding-inline-end: var(--nk-type-title-pad);
+}
+/* Section and sheet titles. @merge nk-type */
+@utility nk-text-section {
+  font-family: var(--nk-type-title-family);
+  font-style: var(--nk-type-title-style);
+  font-size: var(--nk-text-section);
+  line-height: var(--nk-leading-title);
   font-weight: var(--nk-type-title-weight);
-  line-height: 1.3 !important;
   letter-spacing: var(--nk-type-title-tracking);
   text-transform: var(--nk-type-title-case);
+  padding-inline-end: var(--nk-type-title-pad);
 }
-/* Small secondary label, as written (descriptions, meta lines). @merge nk-type */
-@utility nk-label {
-  /* the label role (1.5): --nk-type-label-*; its style, tracking and case apply under the tile treatment */
+/* Panel, dialog and card titles. @merge nk-type */
+@utility nk-text-title {
+  font-family: var(--nk-type-title-family);
+  font-style: var(--nk-type-title-style);
+  font-size: var(--nk-text-title) !important;
+  line-height: var(--nk-leading-title) !important;
+  font-weight: var(--nk-type-title-weight);
+  letter-spacing: var(--nk-type-title-tracking);
+  text-transform: var(--nk-type-title-case);
+  padding-inline-end: var(--nk-type-title-pad);
+}
+/* nk-text-title, by its older name. @merge nk-type */
+@utility nk-title {
+  font-family: var(--nk-type-title-family);
+  font-style: var(--nk-type-title-style);
+  font-size: var(--nk-text-title) !important;
+  line-height: var(--nk-leading-title) !important;
+  font-weight: var(--nk-type-title-weight);
+  letter-spacing: var(--nk-type-title-tracking);
+  text-transform: var(--nk-type-title-case);
+  padding-inline-end: var(--nk-type-title-pad);
+}
+/* Labels and meta lines, as written. @merge nk-type */
+@utility nk-text-label {
   font-family: var(--nk-type-label-family);
-  font-size: var(--nk-caption-size) !important;
-  line-height: var(--nk-leading-tight, 1rem) !important;
+  font-style: var(--nk-type-label-style);
+  font-size: var(--nk-text-label) !important;
+  line-height: var(--nk-leading-tight) !important;
   font-weight: var(--nk-type-label-weight);
+  letter-spacing: var(--nk-type-label-tracking);
+  text-transform: var(--nk-type-label-case);
+  padding-inline-end: var(--nk-type-label-pad);
   color: var(--muted-foreground);
 }
-/* Keys, buttons, tabs, anything scanned (the scan role, 1.5): --nk-type-scan-* at --nk-text-key. @merge nk-type */
+/* nk-text-label, by its older name. @merge nk-type */
+@utility nk-label {
+  font-family: var(--nk-type-label-family);
+  font-style: var(--nk-type-label-style);
+  font-size: var(--nk-text-label) !important;
+  line-height: var(--nk-leading-tight) !important;
+  font-weight: var(--nk-type-label-weight);
+  letter-spacing: var(--nk-type-label-tracking);
+  text-transform: var(--nk-type-label-case);
+  padding-inline-end: var(--nk-type-label-pad);
+  color: var(--muted-foreground);
+}
+/* The short name of a value (Fuel, Balance, Voice): one to three words. @merge nk-type */
+@utility nk-text-caption {
+  font-family: var(--nk-type-label-family);
+  font-style: var(--nk-type-label-style);
+  font-size: var(--nk-text-label) !important;
+  line-height: var(--nk-leading-tight) !important;
+  font-weight: var(--nk-type-weight-strong);
+  letter-spacing: var(--nk-type-tracking-label);
+  text-transform: var(--nk-type-label-case);
+  padding-inline-end: var(--nk-type-label-pad);
+  color: var(--muted-foreground);
+}
+/* nk-text-caption, by its older name. @merge nk-type */
+@utility nk-caption {
+  font-family: var(--nk-type-label-family);
+  font-style: var(--nk-type-label-style);
+  font-size: var(--nk-text-label) !important;
+  line-height: var(--nk-leading-tight) !important;
+  font-weight: var(--nk-type-weight-strong);
+  letter-spacing: var(--nk-type-tracking-label);
+  text-transform: var(--nk-type-label-case);
+  padding-inline-end: var(--nk-type-label-pad);
+  color: var(--muted-foreground);
+}
+/* Keys, buttons, tabs: anything scanned. @merge nk-type */
+@utility nk-text-scan {
+  font-family: var(--nk-type-scan-family);
+  font-style: var(--nk-type-scan-style);
+  font-size: var(--nk-text-key);
+  font-weight: var(--nk-type-scan-weight);
+  letter-spacing: var(--nk-type-scan-tracking);
+  text-transform: var(--nk-type-scan-case);
+}
+/* nk-text-scan, by its older name. @merge nk-type */
 @utility nk-scan {
   font-family: var(--nk-type-scan-family);
   font-style: var(--nk-type-scan-style);
@@ -884,27 +968,82 @@
   letter-spacing: var(--nk-type-scan-tracking);
   text-transform: var(--nk-type-scan-case);
 }
-/* Sentences (the body role, 1.5): --nk-type-body-* at --nk-text-body. @merge nk-type */
-@utility nk-body {
+/* Numbers at their context's size: money, counts, timers (tabular). */
+@utility nk-text-num {
+  font-family: var(--nk-type-num-family);
+  font-style: var(--nk-type-num-style);
+  font-weight: var(--nk-type-num-weight);
+  letter-spacing: var(--nk-type-num-tracking);
+  text-transform: var(--nk-type-num-case);
+  padding-inline-end: var(--nk-type-num-pad);
+  font-variant-numeric: tabular-nums;
+}
+/* nk-text-num, by its older name. */
+@utility nk-num {
+  font-family: var(--nk-type-num-family);
+  font-style: var(--nk-type-num-style);
+  font-weight: var(--nk-type-num-weight);
+  letter-spacing: var(--nk-type-num-tracking);
+  text-transform: var(--nk-type-num-case);
+  padding-inline-end: var(--nk-type-num-pad);
+  font-variant-numeric: tabular-nums;
+}
+/* A number that is the point: a clock, a balance, the speed (tabular, display weight). @merge nk-type */
+@utility nk-text-figure {
+  font-family: var(--nk-type-num-family);
+  font-style: var(--nk-type-num-style);
+  font-size: var(--nk-text-figure);
+  line-height: var(--nk-leading-figure);
+  font-weight: var(--nk-type-weight-display);
+  letter-spacing: var(--nk-type-num-tracking);
+  text-transform: var(--nk-type-num-case);
+  padding-inline-end: var(--nk-type-num-pad);
+  font-variant-numeric: tabular-nums;
+}
+/* Values read in motion on the HUD (tabular). @merge nk-type */
+@utility nk-text-hud {
+  font-family: var(--nk-type-num-family);
+  font-style: var(--nk-type-num-style);
+  font-size: var(--nk-text-hud);
+  line-height: var(--nk-leading-display);
+  font-weight: var(--nk-type-num-weight);
+  letter-spacing: var(--nk-type-num-tracking);
+  text-transform: var(--nk-type-num-case);
+  padding-inline-end: var(--nk-type-num-pad);
+  font-variant-numeric: tabular-nums;
+}
+/* Sentences. @merge nk-type */
+@utility nk-text-body {
   font-family: var(--nk-type-body-family);
   font-style: var(--nk-type-body-style);
   font-size: var(--nk-text-body);
+  line-height: var(--nk-leading-normal);
   font-weight: var(--nk-type-body-weight);
   letter-spacing: var(--nk-type-body-tracking);
   text-transform: var(--nk-type-body-case);
 }
-/* The short name of a value (Fuel, Balance, Voice): the identity's label case and tracking
-   (--nk-type-case: uppercase in Signal and Vector). One to three words; sentences use nk-label.
-   @merge nk-type */
-@utility nk-caption {
-  font-family: var(--nk-caption-font);
-  font-size: var(--nk-caption-size) !important;
-  line-height: var(--nk-leading-tight, 1rem) !important;
-  font-weight: var(--nk-caption-weight);
-  text-transform: var(--nk-caption-case);
-  letter-spacing: var(--nk-caption-tracking);
+/* nk-text-body, by its older name. @merge nk-type */
+@utility nk-body {
+  font-family: var(--nk-type-body-family);
+  font-style: var(--nk-type-body-style);
+  font-size: var(--nk-text-body);
+  line-height: var(--nk-leading-normal);
+  font-weight: var(--nk-type-body-weight);
+  letter-spacing: var(--nk-type-body-tracking);
+  text-transform: var(--nk-type-body-case);
+}
+/* A row's or a notice's description. @merge nk-type */
+@utility nk-text-desc {
+  font-family: var(--nk-type-body-family);
+  font-style: var(--nk-type-body-style);
+  font-size: var(--nk-text-desc);
+  line-height: var(--nk-leading-normal);
+  font-weight: var(--nk-type-body-weight);
+  letter-spacing: var(--nk-type-body-tracking);
+  text-transform: var(--nk-type-body-case);
   color: var(--muted-foreground);
 }
+/* @end generated text styles */
 /* Interactive row in a list: 44px tall at 1080p (× density). The lit row (hover, focus, the list's selection:
    one state, docs/design.md "Selection") sits on a Glyph: the list's sliding Selection, or, for a
    row on its own, its own ::before (the wall) and ::after (the face), drawn by the Selection section below. */
@@ -944,14 +1083,6 @@
   flex-direction: column;
   gap: var(--nk-list-gap);
   padding-bottom: var(--nk-control-wall-height);
-}
-/* Numbers: money, timers, counts. */
-@utility nk-num {
-  /* the num role (1.5): --nk-type-num-*; its weight, case and pad apply under the tile treatment */
-  font-family: var(--nk-type-num-family);
-  font-style: var(--nk-type-num-style);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: var(--nk-type-num-tracking);
 }
 /* HUD chip: always-on, no border, sits on the game. @merge nk-surface */
 @utility nk-chip {
@@ -1029,16 +1160,6 @@
     --background-a: var(--nk-restore-background-a);
     text-shadow: none;
   }
-}
-/* Full-screen title (pause, loading, death): 32px at 1080p (Graphite). @merge nk-type */
-@utility nk-display {
-  font-family: var(--nk-type-title-family);
-  font-style: var(--nk-type-slant, normal);
-  font-size: var(--nk-display-size);
-  line-height: 1.2;
-  font-weight: var(--nk-display-weight);
-  letter-spacing: var(--nk-display-tracking);
-  text-transform: var(--nk-display-case);
 }
 /*
  * Slabs: transient feedback on the game, one anatomy everywhere (design v2 §4.5, docs/tokens.md#slabs).
@@ -1183,9 +1304,9 @@
 @utility nk-slab-band-title {
   font-family: var(--nk-type-title-family);
   font-size: var(--nk-slab-band-title-size);
-  font-weight: var(--nk-display-weight);
-  letter-spacing: var(--nk-display-tracking);
-  text-transform: var(--nk-display-case);
+  font-weight: var(--nk-type-weight-display);
+  letter-spacing: var(--nk-type-tracking-display);
+  text-transform: var(--nk-type-case);
   line-height: 1.2;
 }
 /* Scrolling list inside a panel. */
@@ -1772,7 +1893,7 @@
     color: var(--nk-empty-state-icon-ink-error);
   }
   [data-slot="empty-state"][data-size="screen"] [data-slot="empty-state-title"] {
-    --nk-panel-title-size: var(--nk-empty-state-title-size-screen);
+    --nk-text-title: var(--nk-empty-state-title-size-screen);
   }
   [data-slot="empty-state-description"] {
     font-size: var(--nk-empty-state-description-size);
@@ -2655,24 +2776,10 @@ html[data-nk-backdrop="on"] * {
     box-shadow: inset 0 0 0 var(--nk-line-width, 1px) var(--nk-plate-hair), var(--nk-plate-drop);
   }
 
-  /* ── the voices' extras: a label's case and tracking, a number's weight and case, the italic overhang pad, and
-     the notice icon as a Glyph. */
+  /* ── the notice icon as a Glyph, and a Kbd's legend in the scan voice's tracking and case. Every other text
+     style is a generated nk-text-* utility (packages/core/src/spec/text-styles.ts). */
   :is(html, [data-nk-theme]) {
-    & :is(.nk-label, .nk-caption) {
-      font-style: var(--nk-type-label-style);
-      letter-spacing: var(--nk-type-label-tracking);
-      text-transform: var(--nk-type-label-case);
-      padding-inline-end: var(--nk-type-label-pad);
-    }
-    & .nk-num {
-      font-weight: var(--nk-type-num-weight);
-      text-transform: var(--nk-type-num-case);
-      padding-inline-end: var(--nk-type-num-pad);
-    }
-    & .nk-title {
-      padding-inline-end: var(--nk-type-title-pad);
-    }
-    & :is([data-slot="kbd"], .nk-scan) {
+    & [data-slot="kbd"] {
       letter-spacing: var(--nk-type-scan-tracking);
       text-transform: var(--nk-type-scan-case);
     }

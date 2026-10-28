@@ -143,7 +143,7 @@ function PauseMenu({
             ) : null}
             <div className="min-w-0">
               {/* the pause title: one of the screen's display moments (the identity's display face) */}
-              <h1 className="nk-display truncate [--nk-display-size:var(--nk-text-section)]">{server.name || "Paused"}</h1>
+              <h1 className="nk-text-section truncate">{server.name || "Paused"}</h1>
               {server.tagline ? <p className="nk-label truncate">{server.tagline}</p> : null}
             </div>
           </header>

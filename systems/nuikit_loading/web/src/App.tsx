@@ -148,7 +148,7 @@ function Status({ load, player }: { load: LoadState; player?: string }) {
         />
       </div>
       <Meter value={pct} size="sm" aria-label="Loaded" />
-      <div className="nk-label flex h-4 items-center justify-between gap-6 font-normal">
+      <div className="nk-label flex h-4 items-center justify-between gap-6">
         <span className="truncate">{detail}</span>
         {load.count > 0 && (
           <span className="nk-num shrink-0">

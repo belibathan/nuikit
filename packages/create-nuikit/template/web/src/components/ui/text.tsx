@@ -29,13 +29,13 @@ const textVariants = cva("", {
   variants: {
     variant: {
       none: "",
-      scan: "nk-scan",
-      title: "nk-title",
-      label: "nk-label",
-      num: "nk-num",
-      body: "nk-body",
-      caption: "nk-caption",
-      display: "nk-display",
+      scan: "nk-text-scan",
+      title: "nk-text-title",
+      label: "nk-text-label",
+      num: "nk-text-num",
+      body: "nk-text-body",
+      caption: "nk-text-caption",
+      display: "nk-text-display",
     },
     size: {
       inherit: "",
@@ -43,8 +43,8 @@ const textVariants = cva("", {
       sm: "text-(length:--nk-text-base) leading-5 [font-weight:var(--nk-type-weight-strong)]",
       /** The HUD value size (18px+), strong: the default stat. */
       md: "text-(length:--nk-text-hud) leading-7 [font-weight:var(--nk-type-weight-strong)]",
-      /** Display type in the numeric face: the number is the point (a balance, a clock). */
-      display: "nk-display [font-family:var(--nk-type-num-family)]!",
+      /** The figure style: the number is the point (a balance, a clock). */
+      display: "nk-text-figure",
     },
   },
   defaultVariants: {

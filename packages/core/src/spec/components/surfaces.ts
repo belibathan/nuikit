@@ -28,9 +28,6 @@ export const panel: ComponentDef = {
       height: length(css`calc(3.25rem * ${ref("density")})`, "A header's minimum height", { was: ["nk-panel-header-height"] }),
       padding: string(css`${ref("gap.surface")} ${ref("gap.surface")} ${ref("space.4")}`, "Surface padding; the title a step off its hairline", { was: ["nk-panel-header-padding"] }),
     },
-    title: {
-      size: length(ref("text.title"), "A panel title's size", { was: ["nk-heading-size"] }),
-    },
     body: {
       padding: string(ref("space.3"), "The body's padding", { was: ["nk-panel-body-padding"] }),
     },
@@ -43,31 +40,6 @@ export const panel: ComponentDef = {
       "bracket-width": length(css`calc(${ref("line.width")} * 2)`, "The marks' weight", { was: ["nk-panel-bracket-width"] }),
       "bracket-color": color(pal("brand"), "The marks' colour", { was: ["nk-panel-bracket-color"] }),
     },
-  },
-};
-
-/** The display title: full-screen moments (pause, loading, death). */
-export const display: ComponentDef = {
-  description: "Full-screen titles (the nk-display utility)",
-  anatomy: ["title"],
-  levers: {
-    size: length(ref("text.display"), "Size", { was: ["nk-display-size"] }),
-    weight: string(ref("type.weight-display"), "Weight", { was: ["nk-display-weight"] }),
-    tracking: length(ref("type.tracking-display"), "Letter-spacing", { was: ["nk-display-tracking"] }),
-    case: string(ref("type.case"), "Case", { was: ["nk-display-case"] }),
-  },
-};
-
-/** Captions: the short name of a value (Fuel, Balance), field labels, chips' text. */
-export const caption: ComponentDef = {
-  description: "The short name of a value: nk-caption, nk-field-label",
-  anatomy: ["text"],
-  levers: {
-    font: string(ref("type.label.family"), "Face", { was: ["nk-caption-font", "nk-label-font"] }),
-    size: length(ref("text.label"), "Size", { was: ["nk-caption-size", "nk-label-size"] }),
-    weight: string(ref("type.weight-strong"), "Weight", { was: ["nk-caption-weight", "nk-label-weight"] }),
-    case: string(ref("type.case"), "Case", { was: ["nk-caption-transform"] }),
-    tracking: length(ref("type.tracking-label"), "Letter-spacing", { was: ["nk-caption-tracking"] }),
   },
 };
 

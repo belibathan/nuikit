@@ -98,7 +98,7 @@ function Band({ data, laststand, seconds }: { data: DeathData; laststand: boolea
             <span aria-hidden className="opacity-50">
               ·
             </span>
-            <span className="nk-num [font-family:var(--nk-type-num-family)]">{`${pad(seconds / 60)}:${pad(seconds % 60)}`}</span>
+            <span className="nk-num">{`${pad(seconds / 60)}:${pad(seconds % 60)}`}</span>
           </>
         )}
       </span>

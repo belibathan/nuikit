@@ -116,7 +116,7 @@ function Pause({ data, player }: { data: PauseData; player: NuiPlayer }) {
               {/* up to two lines, a step smaller when long; an ellipsis only past that */}
               <h1
                 className="nk-display line-clamp-2 break-words"
-                style={(server.name ?? "").length > 14 ? ({ "--nk-display-size": "var(--nk-text-section)" } as CSSProperties) : undefined}
+                style={(server.name ?? "").length > 14 ? ({ "--nk-text-display": "var(--nk-text-section)" } as CSSProperties) : undefined}
               >
                 {server.name || "Paused"}
               </h1>

@@ -130,14 +130,14 @@ export function ServerSummary({ data }: { data: PauseData }) {
         <div className="flex items-center gap-1.5">
           <UsersIcon className="size-4 text-muted-foreground" />
           <span className="nk-label flex-1">Players online</span>
-          <span className="nk-num text-sm font-medium">{players ?? "—"}</span>
+          <span className="nk-num text-sm">{players ?? "—"}</span>
         </div>
       )}
       <dl className="grid grid-cols-2 gap-x-4 gap-y-3">
         {facts.map((f) => (
           <div key={f.label} className="flex min-w-0 flex-col gap-0.5">
             <dt className="nk-label truncate text-muted-foreground">{f.label}</dt>
-            <dd className="nk-num truncate text-sm font-medium">{f.value}</dd>
+            <dd className="nk-num truncate text-sm">{f.value}</dd>
           </div>
         ))}
       </dl>

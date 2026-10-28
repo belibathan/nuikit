@@ -10,7 +10,7 @@ generated `@layer nk.base` block, and components read only levers. Four tiers, e
 - **semantic**: roles every component shares (the motion ladder, eases, plate, fill, accent, lines, depth).
 - **component** and **part**: `--nk-<component>-<prop>` and `--nk-<component>-<part>-<prop>`; parts are the component's anatomy, its `data-slot` names in render order. A component references only itself, a component it `inherits`, or the tiers above.
 
-**655 levers** (247 identity, 60 semantic, 348 component) · **38 components** · **34 state variables** (set by kit.css rules per state; not levers). Old names: `packages/core/spec/migration.json`, applied by `node packages/core/scripts/migrate-levers.mjs <path>`.
+**649 levers** (251 identity, 60 semantic, 338 component) · **36 components** · **34 state variables** (set by kit.css rules per state; not levers). Old names: `packages/core/spec/migration.json`, applied by `node packages/core/scripts/migrate-levers.mjs <path>`.
 
 ## The language: the core identity
 
@@ -58,6 +58,26 @@ Tokens file), not the `--nk-` name nuikit's kit uses. The palette rows are shadc
 | `--nk-style-focus` | keyword | `halo` | ring halo tint fill invert bar | Focus on parts that are not rows (rows and buttons light like hover) |
 | `--nk-behavior-alert` | number | `0.2` | 0–1 | A level at or under this is an alert (vitals, durability) |
 
+## The language: the text styles
+
+One complete style per role (`packages/core/src/spec/text-styles.ts`), written once into kit.css as `nk-text-<style>`. A style is a
+voice (face, slant, weight, tracking, case, overhang pad: `--nk-type-<voice>-*`) at a size and a leading; slant comes only from
+the voice, so a component or a screen picks a style and never sets a font-style, family, weight, tracking or case of its own.
+
+| Style | Utility | Voice | Size | Leading | Overrides | For |
+|---|---|---|---|---|---|---|
+| display | `nk-text-display`, `nk-display` | title | `text.display` | `leading.display` | weight type.weight-display, tracking type.tracking-display | Full-screen titles: pause, loading, death |
+| section | `nk-text-section` | title | `text.section` | `leading.title` |  | Section and sheet titles |
+| title | `nk-text-title`, `nk-title` | title | `text.title` | `leading.title` |  | Panel, dialog and card titles |
+| label | `nk-text-label`, `nk-label` | label | `text.label` | `leading.tight` | muted | Labels and meta lines, as written |
+| caption | `nk-text-caption`, `nk-caption` | label | `text.label` | `leading.tight` | weight type.weight-strong, tracking type.tracking-label, muted | The short name of a value (Fuel, Balance, Voice): one to three words |
+| scan | `nk-text-scan`, `nk-scan` | scan | `text.key` | context |  | Keys, buttons, tabs: anything scanned |
+| num | `nk-text-num`, `nk-num` | num | context | context | tabular | Numbers at their context's size: money, counts, timers (tabular) |
+| figure | `nk-text-figure` | num | `text.figure` | `leading.figure` | weight type.weight-display, tabular | A number that is the point: a clock, a balance, the speed (tabular, display weight) |
+| hud | `nk-text-hud` | num | `text.hud` | `leading.display` | tabular | Values read in motion on the HUD (tabular) |
+| body | `nk-text-body`, `nk-body` | body | `text.body` | `leading.normal` |  | Sentences |
+| desc | `nk-text-desc` | body | `text.desc` | `leading.normal` | muted | A row's or a notice's description |
+
 ## The language: the primitives
 
 A primitive is a DOM contract: its anatomy (the `data-slot` tree in render order), the state variables kit rules set per state, and the
@@ -70,7 +90,8 @@ the DOM, not the framework. Composites (meters, sheets, notices) are nuikit's ow
 | **zone** | Nine places and four edges; a zone stacks what it holds towards the screen centre | `item` | 1 |
 | **region** | A readable column inside a zone | `body` | 2 |
 | **grid** | A grid of cells (inventories, shops) | `cell` | 2 |
-| **panel** | Every floating surface: menus, inventories, dialogs (the nk-panel utility) | `header` → `icon` → `title` → `description` → `actions` → `body` → `footer` | 23 |
+| **control** | The keycap: Kbd, notice icons, telltales, the primary button and the selection | `plate` → `wall` → `face` → `fill` → `legend` → `tag` → `group` → `primary` | 37 |
+| **panel** | Every floating surface: menus, inventories, dialogs (the nk-panel utility) | `header` → `icon` → `title` → `description` → `actions` → `body` → `footer` | 22 |
 | **row** | The list row (nk-row): generous padding, an icon column, two voices; lit on the control face | `icon` → `title` → `description` → `trail` → `bar` | 11 |
 | **list** | A list of selectable items (nk-list, MenuRowList): items a gap apart so a lit selection never touches its neighbour | `item` | 2 |
 | **selection** | The one sliding selection per list (nk-indicator, Selection) | `glyph` | 2 |
@@ -298,6 +319,7 @@ Type sizes from one base × type.ratio.
 | `--nk-text-title` | length | `calc(var(--nk-text-base) * (1 + (var(--nk-type-ratio) - 1) / 2))` |  | Panel titles (≈ base × √ratio) |
 | `--nk-text-section` | length | `calc(var(--nk-text-base) * var(--nk-type-ratio) * var(--nk-type-ratio))` |  | Section and sheet titles |
 | `--nk-text-display` | length | `calc(var(--nk-text-base) * var(--nk-type-ratio) * var(--nk-type-ratio) * var(--nk-type-ratio) * var(--nk-type-ratio) * 1.1)` |  | Full-screen titles |
+| `--nk-text-figure` | length | `var(--nk-text-display)` |  | A number that is the point (the figure style); a component re-points it for its size |
 | `--nk-text-hud` | length | `max(1.125rem, calc(var(--nk-text-base) * var(--nk-type-ratio)))` |  | HUD values read in motion |
 | `--nk-text-row` | length | `1.125rem` |  | A row or notice title (the label voice) |
 | `--nk-text-desc` | length | `0.875rem` |  | A row or notice description (the body voice) |
@@ -310,6 +332,9 @@ Line heights.
 |---|---|---|---|---|
 | `--nk-leading-tight` | length | `1rem` |  | Small text: captions, labels, descriptions |
 | `--nk-leading-normal` | length | `1.25rem` |  | Body-size text: rows, notices, slabs |
+| `--nk-leading-title` | number | `1.3` | 1–2 | Titles and sections (a ratio of the size) |
+| `--nk-leading-display` | number | `1.15` | 1–2 | Full-screen titles and HUD values (a ratio of the size) |
+| `--nk-leading-figure` | number | `1` | 0.8–2 | A number that is the point: a clock, a balance, the speed (a ratio of the size) |
 
 ### shape
 
@@ -739,7 +764,6 @@ Every floating surface: menus, inventories, dialogs (the nk-panel utility). Anat
 | `--nk-panel-width-lg` | length | `24rem` |  | Width (lg) |
 | `--nk-panel-header-height` | length | `calc(3.25rem * var(--nk-density))` |  | A header's minimum height |
 | `--nk-panel-header-padding` | string | `var(--nk-gap-surface) var(--nk-gap-surface) var(--nk-space-4)` |  | Surface padding; the title a step off its hairline |
-| `--nk-panel-title-size` | length | `var(--nk-text-title)` |  | A panel title's size |
 | `--nk-panel-body-padding` | string | `var(--nk-space-3)` |  | The body's padding |
 | `--nk-panel-footer-padding` | string | `var(--nk-space-4) var(--nk-gap-surface) var(--nk-gap-surface)` |  | On the panel itself, no rule above it |
 | `--nk-panel-footer-rule` | string | `none` |  | A rule above the footer (none: spacing separates it) |
@@ -748,29 +772,6 @@ Every floating surface: menus, inventories, dialogs (the nk-panel utility). Anat
 | `--nk-panel-actions-bracket-color` | color | `var(--brand)` |  | The marks' colour |
 
 State: `--nk-panel-backdrop`.
-
-### display
-
-Full-screen titles (the nk-display utility). Anatomy: `title`.
-
-| Lever | Type | Default | Range / values | What it moves |
-|---|---|---|---|---|
-| `--nk-display-size` | length | `var(--nk-text-display)` |  | Size |
-| `--nk-display-weight` | string | `var(--nk-type-weight-display)` |  | Weight |
-| `--nk-display-tracking` | length | `var(--nk-type-tracking-display)` |  | Letter-spacing |
-| `--nk-display-case` | string | `var(--nk-type-case)` |  | Case |
-
-### caption
-
-The short name of a value: nk-caption, nk-field-label. Anatomy: `text`.
-
-| Lever | Type | Default | Range / values | What it moves |
-|---|---|---|---|---|
-| `--nk-caption-font` | string | `var(--nk-type-label-family)` |  | Face |
-| `--nk-caption-size` | length | `var(--nk-text-label)` |  | Size |
-| `--nk-caption-weight` | string | `var(--nk-type-weight-strong)` |  | Weight |
-| `--nk-caption-case` | string | `var(--nk-type-case)` |  | Case |
-| `--nk-caption-tracking` | length | `var(--nk-type-tracking-label)` |  | Letter-spacing |
 
 ### row
 

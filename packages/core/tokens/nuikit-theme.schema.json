@@ -1060,6 +1060,11 @@
           "description": "Full-screen titles",
           "$comment": "identity · text.display"
         },
+        "nk-text-figure": {
+          "type": "string",
+          "description": "A number that is the point (the figure style); a component re-points it for its size",
+          "$comment": "identity · text.figure"
+        },
         "nk-text-hud": {
           "type": "string",
           "description": "HUD values read in motion",
@@ -1084,6 +1089,24 @@
           "type": "string",
           "description": "Body-size text: rows, notices, slabs",
           "$comment": "identity · leading.normal"
+        },
+        "nk-leading-title": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Titles and sections (a ratio of the size)",
+          "$comment": "identity · leading.title"
+        },
+        "nk-leading-display": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "Full-screen titles and HUD values (a ratio of the size)",
+          "$comment": "identity · leading.display"
+        },
+        "nk-leading-figure": {
+          "type": "string",
+          "pattern": "^-?\\d+(\\.\\d+)?$",
+          "description": "A number that is the point: a clock, a balance, the speed (a ratio of the size)",
+          "$comment": "identity · leading.figure"
         },
         "nk-shape-skew": {
           "type": "string",
@@ -2345,11 +2368,6 @@
           "description": "Surface padding; the title a step off its hairline",
           "$comment": "component · panel.header.padding"
         },
-        "nk-panel-title-size": {
-          "type": "string",
-          "description": "A panel title's size",
-          "$comment": "component · panel.title.size"
-        },
         "nk-panel-body-padding": {
           "type": "string",
           "description": "The body's padding",
@@ -2380,51 +2398,6 @@
           "pattern": "^rgba?\\(",
           "description": "The marks' colour",
           "$comment": "component · panel.actions.bracket-color"
-        },
-        "nk-display-size": {
-          "type": "string",
-          "description": "Size",
-          "$comment": "component · display.size"
-        },
-        "nk-display-weight": {
-          "type": "string",
-          "description": "Weight",
-          "$comment": "component · display.weight"
-        },
-        "nk-display-tracking": {
-          "type": "string",
-          "description": "Letter-spacing",
-          "$comment": "component · display.tracking"
-        },
-        "nk-display-case": {
-          "type": "string",
-          "description": "Case",
-          "$comment": "component · display.case"
-        },
-        "nk-caption-font": {
-          "type": "string",
-          "description": "Face",
-          "$comment": "component · caption.font"
-        },
-        "nk-caption-size": {
-          "type": "string",
-          "description": "Size",
-          "$comment": "component · caption.size"
-        },
-        "nk-caption-weight": {
-          "type": "string",
-          "description": "Weight",
-          "$comment": "component · caption.weight"
-        },
-        "nk-caption-case": {
-          "type": "string",
-          "description": "Case",
-          "$comment": "component · caption.case"
-        },
-        "nk-caption-tracking": {
-          "type": "string",
-          "description": "Letter-spacing",
-          "$comment": "component · caption.tracking"
         },
         "nk-row-height": {
           "type": "string",

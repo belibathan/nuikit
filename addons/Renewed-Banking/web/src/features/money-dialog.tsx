@@ -94,7 +94,7 @@ export function MoneyForm({
           {presets.length > 0 && (
             <div className="grid auto-cols-fr grid-flow-col gap-2">
               {presets.map((p) => (
-                <Button key={p} type="button" variant="outline" size="sm" className="nk-num px-0 font-normal" onClick={() => setAmount(String(p))}>
+                <Button key={p} type="button" variant="outline" size="sm" className="nk-num px-0" onClick={() => setAmount(String(p))}>
                   {money(p, "whole")}
                 </Button>
               ))}

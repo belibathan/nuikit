@@ -340,7 +340,7 @@ function Speedometer({
         <span
           data-slot="speedometer-speed"
           aria-label="Speed"
-          className="nk-num flex leading-none [font-family:var(--nk-gauge-font)] [font-weight:var(--nk-type-weight-display)] [letter-spacing:var(--nk-speedometer-digit-tracking)] pr-[0.15em]"
+          className="nk-text-figure flex [font-family:var(--nk-gauge-font)] [letter-spacing:var(--nk-speedometer-digit-tracking)]"
           // the in-game face: 3.625rem on the 216px gauge
           style={{ fontSize: rem(0.2685) }}
         >
@@ -360,7 +360,7 @@ function Speedometer({
           data-slot="speedometer-unit"
           value={unit}
           align="center"
-          className="nk-scan mt-(--nk-space-1) uppercase leading-none [letter-spacing:0.08em] [font-weight:var(--nk-type-weight-display)]"
+          className="nk-text-caption mt-(--nk-space-1) leading-none text-current"
           style={{ fontSize: rem(0.06) }}
         />
       </div>
@@ -373,7 +373,7 @@ function Speedometer({
             data-gear={g}
             state={redline ? "alert" : undefined}
             tone={g === "R" ? "warning" : undefined}
-            className={cn("nk-scan [font-weight:800] [letter-spacing:0.02em] uppercase", g === "N" && "opacity-70")}
+            className={cn("nk-text-scan", g === "N" && "opacity-70")}
             // the in-game glyph: 0.62 of the face
             style={{ fontSize: "calc(var(--nk-height-chip) * 0.62)" }}
             aria-label="Gear"

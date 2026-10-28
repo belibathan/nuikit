@@ -71,10 +71,10 @@ body {
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
-  font-family: var(--font-sans);
+  font-family: var(--nk-type-body-family);
   font-size: 15px;
   line-height: 18px;
-  font-weight: 500;
+  font-weight: var(--nk-type-weight-strong);
   overflow-wrap: anywhere;
 }
 .ox-radial-label[data-long="1"] { font-size: 14px; line-height: 17px; }
@@ -112,11 +112,12 @@ body {
   flex-direction: column;
   align-items: center;
   font-family: var(--nk-type-title-family);
+  font-style: var(--nk-type-title-style);
   font-size: 17px;
   line-height: 20px;
   font-weight: var(--nk-type-title-weight);
   letter-spacing: var(--nk-type-title-tracking);
-  text-transform: var(--nk-type-case);
+  text-transform: var(--nk-type-title-case);
   overflow-wrap: anywhere;
 }
 .ox-radial-hub-icon {
@@ -125,12 +126,13 @@ body {
 }
 .ox-radial-hub-caption,
 .ox-radial-hub-page {
-  font-family: var(--nk-caption-font);
+  font-family: var(--nk-type-label-family);
+  font-style: var(--nk-type-label-style);
   font-size: 12px;
   line-height: 14px;
-  font-weight: var(--nk-caption-weight);
-  text-transform: var(--nk-caption-case);
-  letter-spacing: var(--nk-caption-tracking);
+  font-weight: var(--nk-type-weight-strong);
+  text-transform: var(--nk-type-case);
+  letter-spacing: var(--nk-type-tracking-label);
   color: var(--muted-foreground);
 }
 [data-slot="radial-hub"][data-active] :is(.ox-radial-hub-content, .ox-radial-hub-caption) {
@@ -165,7 +167,7 @@ html[data-nk-motion="reduced"] .ox-radial[data-state="open"] .ox-radial-svg {
 
 /* the sheet title: the heading face at section size (the pause title's family, one step down) */
 .ox-sheet-title {
-  --nk-panel-title-size: var(--nk-text-section);
+  --nk-text-title: var(--nk-text-section);
 }
 .ox-sheet-title p {
   margin: 0;
@@ -173,7 +175,7 @@ html[data-nk-motion="reduced"] .ox-radial[data-state="open"] .ox-radial-svg {
 
 /* Rows are the kit's (the baseline, docs/design.md): its height, padding, icon column and voices. */
 .ox-list-header {
-  --nk-panel-title-size: calc(var(--nk-text-title) * 1.1);
+  --nk-text-title: calc(var(--nk-text-title) * 1.1);
 }
 /* The list menu's selection is the kit's Selection (.ox-indicator): one Glyph gliding between the rows,
    which paint nothing of their own (kit.css, Selection). Its glide keeps the kit's key-repeat rule. */
@@ -285,7 +287,7 @@ html[data-nk-motion="reduced"] .ox-radial[data-state="open"] :is(.ox-radial-svg,
   background: none;
 }
 :is([data-slot="dialog-content"], [data-slot="alert-dialog-content"]) .nk-panel-header .nk-title {
-  --nk-panel-title-size: var(--nk-text-section);
+  --nk-text-title: var(--nk-text-section);
 }
 :is([data-slot="dialog-content"], [data-slot="alert-dialog-content"]) .ox-dialog-body {
   padding: var(--nk-space-6) var(--ox-dialog-pad);

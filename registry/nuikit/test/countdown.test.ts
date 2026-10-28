@@ -4,14 +4,13 @@ import { countdownDrain, countdownState, countdownVariants, formatCountdown, spo
 import { cn } from "@/lib/utils"
 
 describe("countdown", () => {
-  it("keeps leading-none at every size after tailwind-merge (a font size used to drop it)", () => {
+  it("is the figure text style at every size, never a fixed text-* class, after tailwind-merge", () => {
     for (const size of ["sm", "default", "hero"] as const) {
       // the component merges exactly like this: cn(countdownVariants({ size }), …)
       const classes = cn(countdownVariants({ size }), "text-destructive opacity-40").split(" ")
-      expect(classes, size).toContain("leading-none")
-      // the size is the identity's display size (nk-display), never a fixed text-* class
-      expect(classes, size).toContain("nk-display")
-      expect(classes.filter((c) => c.startsWith("text-[") || c === "text-xl"), size).toHaveLength(0)
+      // the figure style carries the face, weight, tabular figures and leading 1; a size re-points --nk-text-figure
+      expect(classes, size).toContain("nk-text-figure")
+      expect(classes.filter((c) => c.startsWith("text-[") || c === "text-xl" || c.startsWith("leading-")), size).toHaveLength(0)
     }
   })
 

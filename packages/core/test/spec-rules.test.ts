@@ -6,7 +6,7 @@ import { execFileSync } from "node:child_process";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { ANATOMY, BY_PATH, COMPONENTS, LEVERS, STATE, type Ref, type Value } from "../src/spec";
+import { ANATOMY, BY_PATH, COMPONENTS, LEVERS, STATE, TEXT_STYLES, type Ref, type Value } from "../src/spec";
 import naming from "../spec/migration.json";
 
 const root = path.resolve(__dirname, "../../..");
@@ -131,3 +131,27 @@ describe("the token language", () => {
     expect(() => execFileSync(process.execPath, [path.join(root, "packages/core/scripts/gen-tokens.mjs"), "--check"], { stdio: "pipe" })).not.toThrow();
   });
 });
+
+describe("the text styles (src/spec/text-styles.ts)", () => {
+  it("every style names real levers: its voice, size, leading and overrides", () => {
+    for (const [n, st] of Object.entries(TEXT_STYLES)) {
+      for (const p of ["family", "style", "weight", "tracking", "case"]) expect(BY_PATH.has(`type.${st.voice}.${p}`), `${n}: type.${st.voice}.${p}`).toBe(true)
+      for (const p of [st.size, st.leading, st.weight, st.tracking, st.case].filter(Boolean) as string[]) expect(BY_PATH.has(p), `${n}: ${p}`).toBe(true)
+      if (st.size) expect(st.size.startsWith("text."), `${n} size`).toBe(true)
+      if (st.leading) expect(st.leading.startsWith("leading."), `${n} leading`).toBe(true)
+    }
+  })
+
+  it("aliases are unique and never shadow a style", () => {
+    const names = Object.keys(TEXT_STYLES).map((n) => `nk-text-${n}`)
+    const aliases = Object.values(TEXT_STYLES).flatMap((s) => s.aliases ?? [])
+    expect(new Set([...names, ...aliases]).size).toBe(names.length + aliases.length)
+  })
+
+  it("kit.css carries every style, generated (gen-tokens), and slant comes only from the voices", () => {
+    const kit = readFileSync(path.resolve(__dirname, "../../create-nuikit/kit.css"), "utf8")
+    for (const n of Object.keys(TEXT_STYLES)) expect(kit, n).toContain(`@utility nk-text-${n} {`)
+    const decls = kit.replace(/\/\*[\s\S]*?\*\//g, "")
+    expect(decls.match(/font-style:\s*italic/g) ?? [], "kit.css sets italic outside the voices").toEqual([])
+  })
+})

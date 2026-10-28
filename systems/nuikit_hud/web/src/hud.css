@@ -21,7 +21,7 @@
   --hud-fg: var(--world-foreground, var(--hud-foreground));
   --hud-fg-muted: var(--world-foreground-muted, color-mix(in oklab, var(--hud-fg) 72%, transparent));
   color: var(--hud-fg);
-  font-family: var(--font-sans);
+  font-family: var(--nk-type-body-family);
   --edge: var(--nk-screen-edge, 1.5rem);
   --hud-accent: var(--brand, var(--primary));
   --hud-accent-foreground: var(--brand-foreground, var(--primary-foreground));
@@ -38,8 +38,6 @@
   --hud-redline: var(--nk-gauge-redline-color, var(--hud-danger));
   --hud-fill: var(--nk-gauge-fill-color, var(--brand, var(--primary)));
   --hud-needle: var(--nk-gauge-needle-color, var(--hud-fg));
-  --hud-font-num: var(--font-numeric, var(--font-sans));
-  --hud-font-display: var(--font-display, var(--font-sans));
   /* the HUD material (tokens 1.4), which legibility lifts by day; 1.3 themes: --nk-material-hud-opacity */
   --hud-plate-opacity: var(--nk-alpha-hud, var(--nk-material-hud-opacity, 0.55));
   --hud-ms: calc(var(--nk-time-slow) * var(--nk-motion, 1));
@@ -57,19 +55,13 @@
 }
 
 .hud-num {
-  font-family: var(--hud-font-num);
-  font-style: var(--nk-type-slant, normal);
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
 }
 .hud-label,
 .hud-unit {
   font-size: 0.75rem;
   line-height: 1rem;
-  font-weight: 500;
   opacity: 0.75;
-  text-transform: var(--nk-type-case, none);
-  letter-spacing: var(--nk-type-tracking-label, 0);
 }
 
 /* ───────────────────────────── anchors: GTA's safe area + --nk-screen-edge */
@@ -247,16 +239,13 @@
   border-radius: calc(var(--radius) + 2px);
 }
 .hud-bearing-point {
-  font-family: var(--hud-font-display);
   font-size: 1.0625rem;
   line-height: 1;
-  font-weight: 700;
 }
 .hud-bearing-deg {
   margin-top: 0.1875rem;
   font-size: 0.6875rem;
   line-height: 1;
-  font-weight: 500;
   opacity: 0.75;
 }
 .hud-location-text {
@@ -268,11 +257,8 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-family: var(--hud-font-display);
   font-size: 1.125rem;
   line-height: 1.375rem;
-  font-weight: 600;
-  letter-spacing: var(--nk-type-tracking-display, -0.01em);
 }
 .hud-area {
   overflow: hidden;
@@ -280,7 +266,6 @@
   white-space: nowrap;
   font-size: 0.875rem;
   line-height: 1.25rem;
-  font-weight: 500;
   opacity: 0.82;
 }
 .hud-tags {
@@ -299,7 +284,6 @@
   color: var(--hud-chip-fg);
   box-shadow: inset 0 0 0 1px var(--hud-hairline);
   font-size: 0.75rem;
-  font-weight: 600;
   text-shadow: none;
 }
 .hud-tag svg {
@@ -358,9 +342,7 @@
 }
 .hud-tape-label {
   fill: var(--hud-fg);
-  font-family: var(--hud-font-display);
   font-size: 14px;
-  font-weight: 700;
 }
 .hud-tape-label[data-kind="inter"] {
   font-size: 11px;
@@ -371,9 +353,7 @@
 }
 .hud-tape-num {
   fill: var(--hud-fg);
-  font-family: var(--hud-font-num);
   font-size: 10px;
-  font-weight: 500;
   opacity: 0.6;
 }
 .hud-compass-caret {
@@ -393,7 +373,6 @@
   box-shadow: inset 0 0 0 1px var(--hud-hairline);
   font-size: 0.8125rem;
   line-height: 1rem;
-  font-weight: 600;
 }
 
 /* ───────────────────────────── minimap frame */
@@ -434,10 +413,8 @@
   height: 1rem;
   border-radius: 9999px;
   color: var(--popover-foreground);
-  font-family: var(--hud-font-display);
   font-size: 0.5625rem;
   line-height: 1;
-  font-weight: 700;
   opacity: 0.7;
   will-change: transform;
 }
@@ -484,24 +461,19 @@
 .hud-money-value {
   font-size: 1.0625rem;
   line-height: 1.5rem;
-  font-weight: 600;
 }
 .hud-money[data-size="lg"] .hud-money-icon svg {
   width: 1.25rem;
   height: 1.25rem;
 }
 .hud-money[data-size="lg"] .hud-money-value {
-  font-family: var(--hud-font-display);
   font-size: 1.75rem;
   line-height: 2.25rem;
-  font-weight: var(--nk-type-weight-display, 700);
   font-variant-numeric: tabular-nums;
-  letter-spacing: var(--nk-type-tracking-display, -0.02em);
 }
 .hud-money-delta {
   margin-right: 0.25rem;
   font-size: 0.875rem;
-  font-weight: 600;
   color: var(--hud-danger);
   animation: hud-rise calc(5s * var(--nk-motion, 1)) ease-out both;
 }
@@ -516,7 +488,6 @@
   max-width: 18rem;
   font-size: 0.875rem;
   line-height: 1.25rem;
-  font-weight: 500;
   opacity: 0.9;
 }
 .hud-job svg {
@@ -560,11 +531,8 @@
   opacity: 0.4;
 }
 .hud-speed {
-  font-family: var(--hud-font-num);
   font-size: 3.75rem;
   line-height: 1;
-  font-weight: var(--nk-type-weight-display, 700);
-  letter-spacing: -0.04em;
 }
 .hud-gear {
   display: inline-flex;
@@ -578,7 +546,6 @@
   box-shadow: inset 0 0 0 1px var(--hud-faint);
   font-size: 1.125rem;
   line-height: 1;
-  font-weight: 700;
   transition: background-color calc(var(--nk-time-fast) * var(--nk-motion, 1)), color calc(var(--nk-time-fast) * var(--nk-motion, 1));
 }
 .hud-gear[data-gear="R"] {
@@ -599,7 +566,6 @@
 .hud-gear-wide {
   min-width: 5.5rem;
   font-size: 0.875rem;
-  font-weight: 600;
 }
 
 /* shift lights: five steps up to the redline, flashing at it */
@@ -652,7 +618,6 @@
   gap: 0.375rem;
   font-size: 0.75rem;
   line-height: 1;
-  font-weight: 600;
 }
 .hud-fuel svg {
   width: 0.875rem;
@@ -703,7 +668,6 @@
   margin-left: 0.25rem;
   font-size: 0.8125rem;
   line-height: 1.125rem;
-  font-weight: 600;
 }
 .hud-telltale {
   align-items: center;
@@ -733,9 +697,6 @@
   margin-bottom: 0.75rem;
   transform: translateX(-50%);
   text-shadow: none;
-}
-.hud-warning {
-  font-weight: 600;
 }
 
 /* arc */
@@ -775,9 +736,7 @@
 }
 .hud-tick-label {
   fill: var(--hud-fg);
-  font-family: var(--hud-font-num);
   font-size: 13px;
-  font-weight: 600;
   opacity: 0.7;
 }
 .hud-tick-label[data-red] {
@@ -981,7 +940,6 @@
 .hud-air-value {
   font-size: 2.25rem;
   line-height: 2.75rem;
-  font-weight: var(--nk-type-weight-display, 700);
 }
 .hud-air-rose {
   display: flex;
@@ -1001,15 +959,12 @@
 }
 .hud-rose-label {
   fill: var(--hud-fg);
-  font-family: var(--hud-font-num);
   font-size: 9px;
-  font-weight: 600;
   opacity: 0.85;
 }
 .hud-rose-label[data-north] {
   fill: var(--hud-accent);
   font-size: 11px;
-  font-weight: 700;
   opacity: 1;
 }
 .hud-rose-lubber {
@@ -1025,7 +980,6 @@
 .hud-air-heading {
   font-size: 0.875rem;
   line-height: 1.25rem;
-  font-weight: 600;
 }
 .hud-air-foot {
   grid-column: 1 / -1;
@@ -1043,7 +997,6 @@
   border-radius: var(--hud-chip-radius);
   background-color: color-mix(in oklab, var(--hud-fg) 8%, transparent);
   font-size: 0.75rem;
-  font-weight: 500;
 }
 .hud-air-flag svg {
   width: 0.875rem;
@@ -1064,9 +1017,6 @@
   /* a solid neutral for marks that sit on a line (cardinals, the waypoint tag) */
   --hud-solid: var(--nk-panel-bg, var(--popover));
   --hud-solid-fg: var(--nk-panel-fg, var(--popover-foreground));
-  --hud-caption-font: var(--nk-caption-font, var(--font-sans));
-  --hud-caption-case: var(--nk-caption-case, var(--nk-type-case, none));
-  --hud-caption-tracking: var(--nk-caption-tracking, var(--nk-type-tracking-label, 0));
 }
 
 /* ───────────────────────────── map ring + compass */
@@ -1140,7 +1090,6 @@
   box-shadow: 0 0 0 1px var(--hud-hairline);
   font-size: 0.8125rem;
   line-height: 1;
-  font-weight: 600;
   white-space: nowrap;
   text-shadow: none;
 }
@@ -1198,18 +1147,14 @@
   white-space: nowrap;
 }
 .hud-loc-street {
-  font-family: var(--hud-font-display);
   font-size: 1.0625rem;
   line-height: 1.375rem;
-  font-weight: var(--nk-type-weight-strong, 600);
-  letter-spacing: calc(var(--nk-type-tracking-display, -0.02em) / 2);
 }
 /* cross street · zone postal: one muted line, a dot between the parts */
 .hud-loc-detail {
   max-width: none;
   font-size: 0.75rem;
   line-height: 1.125rem;
-  font-weight: 500;
   white-space: nowrap;
   opacity: 0.72;
 }
@@ -1220,9 +1165,6 @@
   content: "·";
   margin: 0 0.375rem;
   opacity: 0.7;
-}
-.hud-loc-postal {
-  letter-spacing: 0;
 }
 /* the postal follows the zone with a space, not a dot */
 .hud-loc-detail > .hud-loc-postal::before {
@@ -1238,7 +1180,6 @@
   gap: 0.25rem;
   margin-top: 0.25rem;
   font-size: 0.8125rem;
-  font-weight: 600;
 }
 .hud-loc-waypoint svg {
   color: var(--hud-accent);
@@ -1254,7 +1195,6 @@
 .hud-money[data-size="md"] .hud-money-value {
   font-size: 1.125rem;
   line-height: 1.5rem;
-  font-weight: 600;
 }
 .hud-money[data-size="md"] {
   gap: 0.375rem;
@@ -1297,13 +1237,11 @@
 .hud-ammo-clip {
   font-size: 1.875rem;
   line-height: 1;
-  font-weight: var(--nk-type-weight-display, 700);
 }
 .hud-ammo-reserve {
   margin-left: 0.3125rem;
   font-size: 1rem;
   line-height: 1;
-  font-weight: 600;
   opacity: 0.6;
 }
 .hud-ammo-sep {
@@ -1351,8 +1289,6 @@
   display: flex;
   font-size: 2.875rem;
   line-height: 1;
-  font-weight: var(--nk-type-weight-display, 700);
-  letter-spacing: -0.03em;
 }
 .hud-c-speed > [data-dim] {
   opacity: 0.26;
@@ -1371,12 +1307,8 @@
 }
 .hud-c-unit {
   margin-top: 0.1875rem;
-  font-family: var(--hud-caption-font);
   font-size: 0.6875rem;
   line-height: 1;
-  font-weight: 600;
-  text-transform: var(--hud-caption-case);
-  letter-spacing: var(--hud-caption-tracking);
 }
 /* the gear chip sits in the arc's opening at the bottom */
 .hud-c-center {
@@ -1389,7 +1321,6 @@
 .hud-c-heading {
   font-size: 0.875rem;
   line-height: 1;
-  font-weight: 600;
   white-space: nowrap;
 }
 .hud-c-signal {
@@ -1440,7 +1371,6 @@
 .hud-c-fuel-value {
   font-size: 0.8125rem;
   line-height: 1;
-  font-weight: 600;
 }
 .hud-c-fuel[data-state="alert"] {
   color: var(--hud-warn);
@@ -1546,7 +1476,6 @@
 .hud-c-tell-text {
   font-size: 0.625rem;
   line-height: 1;
-  font-weight: 700;
 }
 .hud-c-tell[data-tone="success"] { color: var(--hud-ok); }
 .hud-c-tell[data-tone="info"] { color: var(--info); }
@@ -1940,45 +1869,11 @@ html[data-nk-motion="off"] .hud-root * {
 .hud-beside-map {
   contain: layout;
 }
-
-
-/* location, money, job: display type */
-.hud-loc-street,
-.hud-money-value,
-.hud-job,
-.hud-street {
-  font-family: var(--hud-font-display);
-  font-style: italic;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  padding-right: 0.15em;
-}
 .hud-loc-street { font-size: 1.25rem; line-height: 1.5rem; }
 .hud-job { font-size: 0.9375rem; gap: 0.5rem; opacity: 0.85; }
 .hud-wallet[data-compact] .hud-job { font-size: 0.875rem; }
-.hud-money-delta { font-family: var(--hud-font-display); font-style: italic; font-weight: 700; letter-spacing: 0.03em; }
-
-/* the speedometer: speed and unit in the display face */
-.hud-speed { font-family: var(--hud-font-display); font-style: italic; letter-spacing: 0.01em; padding-right: 0.15em; }
-.hud-unit { font-family: var(--hud-font-display); font-style: italic; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
-
-/* compact cluster: speed and unit in the display face; the gear and the telltales are keycaps */
-.hud-c-speed,
-.hud-c-heading,
-.hud-c-unit,
-.hud-c-fuel-value,
-.hud-c-tell-text {
-  font-family: var(--hud-font-display);
-  font-style: italic;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  padding-right: 0.15em;
-}
-.hud-c-speed { font-size: 3.25rem; letter-spacing: 0.01em; }
-.hud-c-unit,
-.hud-c-heading { text-transform: uppercase; }
-.hud-c-unit { font-size: 0.8125rem; letter-spacing: 0.08em; }
+.hud-c-speed { font-size: 3.25rem; }
+.hud-c-unit { font-size: 0.8125rem; }
 /* a telltale is a keycap; a lit one carries its status colour on the glyph */
 .hud-c-tell { position: relative; overflow: visible; }
 .hud-c-tell[data-tone="success"] [data-slot="vital-chip-icon"] { color: var(--hud-ok); }
@@ -2009,13 +1904,8 @@ html[data-nk-motion="off"] .hud-root * {
   width: auto;
   padding-inline: calc(0.625rem + 0.15em) 0.625rem;
   white-space: pre;
-  font-family: var(--hud-font-display);
-  font-style: italic;
-  font-weight: 700;
   font-size: 0.9375rem;
   line-height: 1;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
 }
 /* the gear: one tile; reverse takes the warning rim, the redline fills the face red */
 .hud-c-gear-tile { display: block; }
@@ -2029,3 +1919,77 @@ html[data-nk-motion="off"] .hud-root * {
 
 .hud-c-cluster { padding-left: 2.375rem; }
 .hud-c-tells { top: 50%; bottom: auto; transform: translateY(-50%); }
+
+/* ── the HUD's type: every text picks a voice (--nk-type-<voice>-*: face, slant, weight, tracking, case, the
+   overhang pad; the same voices as the kit's nk-text-* styles) and never sets its own. The sizes are the HUD's.
+   .hud-root raises these over the layout rules above. */
+/* names read at a glance: streets, the job, keys, headings, tags (the label voice) */
+.hud-root :is(.hud-street,
+    .hud-loc-street,
+    .hud-job,
+    .hud-c-heading,
+    .hud-c-tell-text,
+    .hud-map-heading-tile,
+    .hud-bearing-point,
+    .hud-tape-label,
+    .hud-tag,
+    .hud-compass-readout,
+    .hud-cardinal,
+    .hud-gear,
+    .hud-gear-wide,
+    .hud-telltale-text,
+    .hud-warning,
+    .hud-air-flag,
+    .hud-map-tag,
+    .hud-loc-waypoint) {
+  font-family: var(--nk-type-label-family);
+  font-style: var(--nk-type-label-style);
+  font-weight: var(--nk-type-label-weight);
+  letter-spacing: var(--nk-type-label-tracking);
+  text-transform: var(--nk-type-label-case);
+  padding-inline-end: var(--nk-type-label-pad);
+}
+/* the short name of a value: units, captions (the caption style: the label voice, strong and tracked) */
+.hud-root :is(.hud-label,
+    .hud-unit,
+    .hud-c-unit) {
+  font-family: var(--nk-type-label-family);
+  font-style: var(--nk-type-label-style);
+  font-weight: var(--nk-type-weight-strong);
+  letter-spacing: var(--nk-type-tracking-label);
+  text-transform: var(--nk-type-label-case);
+}
+/* numbers: speed, money, ammo, ticks (the num voice, tabular) */
+.hud-root :is(.hud-num,
+    .hud-speed,
+    .hud-c-speed,
+    .hud-money-value,
+    .hud-money-delta,
+    .hud-c-fuel-value,
+    .hud-tape-num,
+    .hud-tick-label,
+    .hud-rose-label,
+    .hud-bearing-deg,
+    .hud-air-value,
+    .hud-air-heading,
+    .hud-ammo-clip,
+    .hud-ammo-reserve,
+    .hud-fuel,
+    .hud-loc-postal) {
+  font-family: var(--nk-type-num-family);
+  font-style: var(--nk-type-num-style);
+  font-weight: var(--nk-type-num-weight);
+  letter-spacing: var(--nk-type-num-tracking);
+  text-transform: var(--nk-type-num-case);
+  padding-inline-end: var(--nk-type-num-pad);
+  font-variant-numeric: tabular-nums;
+}
+/* secondary lines under a name: the area, a detail (the body voice, strong enough for the game) */
+.hud-root :is(.hud-area,
+    .hud-loc-detail) {
+  font-family: var(--nk-type-body-family);
+  font-style: var(--nk-type-body-style);
+  font-weight: var(--nk-type-weight-strong);
+  letter-spacing: var(--nk-type-body-tracking);
+  text-transform: var(--nk-type-body-case);
+}
