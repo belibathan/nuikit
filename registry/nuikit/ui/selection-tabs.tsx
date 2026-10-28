@@ -75,4 +75,4 @@ function SegmentedControl({ options, stretch = true, listClassName, triggerClass
   )
 }
 
-export { Tabs, TabsList, TabsTrigger, TabsContent, SegmentedControl, type SegmentedOption, type SegmentedControlProps }
+export { Tabs, TabsList, TabsTrigger, TabsContent, SegmentedControl }

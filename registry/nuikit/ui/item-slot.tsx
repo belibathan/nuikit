@@ -228,4 +228,4 @@ function ItemSlot({
   )
 }
 
-export { ItemSlot, itemSlotVariants, itemSlotState, durabilityLevel, type ItemSlotState, type ItemSlotProps }
+export { ItemSlot, itemSlotVariants, itemSlotState, durabilityLevel }

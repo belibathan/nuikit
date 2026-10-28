@@ -275,4 +275,4 @@ function Selection({
   return <div ref={ref} aria-hidden data-slot="selection" data-shape={shape} data-hidden="" className={cn("nk-indicator", className)} {...props} />
 }
 
-export { Selection, useSelectionIndicator, type SelectionOptions, type SelectionShape }
+export { Selection, useSelectionIndicator }

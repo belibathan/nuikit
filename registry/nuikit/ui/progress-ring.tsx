@@ -273,4 +273,4 @@ function ProgressRing({
   )
 }
 
-export { ProgressRing, progressRingVariants, ringPercent, ringOffset, ringHalfKeyframes, ringSegmentKeyframes, type ProgressRingTone, type ProgressRingProps }
+export { ProgressRing, progressRingVariants, ringPercent, ringOffset, ringHalfKeyframes }

@@ -328,4 +328,4 @@ const RadialMenu = React.forwardRef<
   )
 })
 
-export { RadialMenu, radialCenterAction, radialIndex, radialSpin, radialStep, radialTurn, wedgePath, type RadialMenuItem, type RadialMenuHandle }
+export { RadialMenu, radialCenterAction, radialIndex, radialSpin, radialStep, radialTurn, wedgePath, type RadialMenuItem }

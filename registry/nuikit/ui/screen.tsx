@@ -55,4 +55,4 @@ function Screen({ bleed, ratio, safe, density, as: Comp = "div", className, styl
   )
 }
 
-export { Screen, type ScreenProps }
+export { Screen }

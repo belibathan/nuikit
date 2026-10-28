@@ -141,4 +141,4 @@ function useLinearRun(root: React.RefObject<HTMLElement | null>, options: Linear
   return active && done
 }
 
-export { useLinearRun, motionOn, type LinearRunOptions, type LinearRunTarget }
+export { useLinearRun }

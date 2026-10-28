@@ -538,4 +538,4 @@ function Meter({
   )
 }
 
-export { Meter, meterVariants, meterLevel, segmentFills, meterColor, segmentKeyframes, type MeterTone, type MeterFill, type MeterLevel }
+export { Meter, meterVariants, meterLevel, segmentFills, meterColor, segmentKeyframes, type MeterTone }

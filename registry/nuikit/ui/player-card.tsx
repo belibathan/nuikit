@@ -143,4 +143,4 @@ function PlayerCard({
   )
 }
 
-export { PlayerCard, initials, type PlayerCardStat }
+export { PlayerCard, initials }

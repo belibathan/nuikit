@@ -122,4 +122,4 @@ function Text({
   )
 }
 
-export { Text, textVariants, parseKeyTokens, withKeys, type TextRole, type TextSize, type KeyPart }
+export { Text, textVariants, parseKeyTokens, withKeys, type TextSize }

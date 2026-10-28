@@ -153,4 +153,4 @@ function Money({
   )
 }
 
-export { Money, moneyVariants, formatMoney, formatCount, useFormatMoney, moneyDirection, type MoneyFormat, type MoneySign }
+export { Money, moneyVariants, formatMoney, formatCount, useFormatMoney, moneyDirection }

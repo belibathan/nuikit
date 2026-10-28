@@ -108,4 +108,4 @@ function Fill({
   )
 }
 
-export { Fill, alertAt, toneVars, fillTargets, type FillTone }
+export { Fill, alertAt, toneVars, fillTargets }

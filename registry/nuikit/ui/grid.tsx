@@ -106,4 +106,4 @@ function useGridNav(ref: React.RefObject<HTMLElement | null>, { cells = ":scope 
   }, [ref, cells, onMove])
 }
 
-export { Grid, useGridNav, nextCell, type GridProps }
+export { Grid, useGridNav, nextCell }

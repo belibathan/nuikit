@@ -64,4 +64,4 @@ function Region({ header, footer, scroll, fill, pad, max, as: Comp = "div", clas
   )
 }
 
-export { Region, type RegionProps }
+export { Region }

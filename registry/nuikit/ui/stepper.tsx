@@ -246,4 +246,4 @@ function StepperKey({ side, disabled, onStep, children }: { side: "prev" | "next
   )
 }
 
-export { Stepper, stepperVariants, type StepperProps, type StepperValue }
+export { Stepper, stepperVariants }

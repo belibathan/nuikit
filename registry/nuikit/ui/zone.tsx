@@ -118,4 +118,4 @@ function usePublishedRect(ref: React.RefObject<HTMLElement | null>, name: string
   }, [ref, name, remote])
 }
 
-export { Zone, usePublishedRect, type ZoneProps }
+export { Zone, usePublishedRect }
