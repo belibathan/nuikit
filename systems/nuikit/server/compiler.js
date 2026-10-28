@@ -2048,6 +2048,15 @@ var NuikitTheme = (() => {
       "description": "Trailing pad of a slanted voice (the italic's overhang); 0em when upright"
     },
     {
+      "name": "nk-type-overhang-clip",
+      "path": "type.overhang-clip",
+      "tier": "identity",
+      "scope": "type",
+      "type": "length",
+      "default": "calc(var(--nk-type-overhang) * 2 + 0.06em)",
+      "description": "How far a clipped text window (TextRoll, a reel) reaches past its text on each side: twice the overhang, since a heavy slanted cap leans further than its trailing pad, plus a hair for antialiasing"
+    },
+    {
       "name": "nk-type-scan-family",
       "path": "type.scan.family",
       "tier": "identity",

@@ -226,6 +226,7 @@ export const type: Group = {
     case: keyword(["none", "uppercase"], "none", "Anything scanned (keys, titles, labels, captions) in caps or as written", { attr: "case", was: ["nk-label-case", "nk-heading-case", "nk-display-case", "nk-caption-case", "nk-caption-transform"], core: true }),
     slant: keyword(["normal", "italic"], "normal", "The scanned voices upright or italic (a real italic where the face has one)", { attr: "slant", was: ["nk-display-style"], core: true }),
     overhang: length("0em", "Trailing pad of a slanted voice (the italic's overhang); 0em when upright", { was: [] }),
+    "overhang-clip": length(css`calc(${ref("type.overhang")} * 2 + 0.06em)`, "How far a clipped text window (TextRoll, a reel) reaches past its text on each side: twice the overhang, since a heavy slanted cap leans further than its trailing pad, plus a hair for antialiasing", {}),
   },
   // the five voices: two in practice, the display face for anything scanned and the sans for sentences
   parts: {

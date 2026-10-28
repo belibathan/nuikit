@@ -2456,6 +2456,19 @@
         }
       }
     },
+    "overhang-clip": {
+      "$type": "dimension",
+      "$value": "calc(var(--nk-type-overhang) * 2 + 0.06em)",
+      "$description": "How far a clipped text window (TextRoll, a reel) reaches past its text on each side: twice the overhang, since a heavy slanted cap leans further than its trailing pad, plus a hair for antialiasing",
+      "$extensions": {
+        "nuikit": {
+          "tier": "identity",
+          "scope": "type",
+          "css": "--nk-type-overhang-clip",
+          "type": "length"
+        }
+      }
+    },
     "scan": {
       "family": {
         "$type": "fontFamily",

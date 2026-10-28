@@ -184,11 +184,10 @@ function speedometerPainter(root: HTMLElement, options: { redline?: number; size
 /** Gears in order, for the roll direction: R, N, 1 to 8. */
 const gearOrder = (g: string) => (g === "R" ? -1 : g === "N" ? 0 : Number(g) || 0)
 
-/** The reel window: glyphs stacked, clipped vertically only (italic glyphs overhang sideways). */
 /** A digit: dimmed while it is a leading zero. */
 const DIGIT = "transition-opacity duration-(--nk-time-base) ease-out data-dim:opacity-(--nk-speedometer-digit-dim,0.26)"
-/** A live reel window: glyphs stacked, clipped vertically only (italic glyphs overhang sideways). */
-const REEL = "inline-grid py-[0.08em] -my-[0.08em] [clip-path:inset(0_-0.5em)] [&>span]:[grid-area:1/1]"
+/** A live reel window: glyphs stacked, clipped vertically only (a slanted face overhangs sideways by up to --nk-type-overhang-clip). */
+const REEL = "inline-grid py-[0.08em] -my-[0.08em] [clip-path:inset(0_calc(var(--nk-type-overhang-clip)*-2))] [&>span]:[grid-area:1/1]"
 
 type SpeedometerProps = Omit<React.ComponentProps<"div">, "children"> & {
   speed: number

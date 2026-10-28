@@ -1297,7 +1297,7 @@
 .hud-reel {
   display: inline-grid;
   /* clip y only: italic glyphs overhang their box sideways */
-  clip-path: inset(0 -0.5em);
+  clip-path: inset(0 calc(var(--nk-type-overhang-clip) * -2));
   padding: 0.08em 0;
   margin: -0.08em 0;
   transition: opacity calc(var(--nk-time-base) * var(--nk-motion, 1)) ease-out;
@@ -1902,7 +1902,7 @@ html[data-nk-motion="off"] .hud-root * {
 }
 .hud-map-heading-tile {
   width: auto;
-  padding-inline: calc(0.625rem + 0.15em) 0.625rem;
+  padding-inline: calc(0.625rem + var(--nk-type-label-pad)) 0.625rem;
   white-space: pre;
   font-size: 0.9375rem;
   line-height: 1;

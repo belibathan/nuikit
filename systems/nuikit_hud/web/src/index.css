@@ -798,6 +798,7 @@
     --nk-type-case: none;
     --nk-type-slant: normal;
     --nk-type-overhang: 0em;
+    --nk-type-overhang-clip: calc(var(--nk-type-overhang) * 2 + 0.06em);
     --nk-type-scan-family: var(--font-display);
     --nk-type-scan-style: var(--nk-type-slant);
     --nk-type-scan-weight: 800;

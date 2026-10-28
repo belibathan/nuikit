@@ -10,7 +10,7 @@ generated `@layer nk.base` block, and components read only levers. Four tiers, e
 - **semantic**: roles every component shares (the motion ladder, eases, plate, fill, accent, lines, depth).
 - **component** and **part**: `--nk-<component>-<prop>` and `--nk-<component>-<part>-<prop>`; parts are the component's anatomy, its `data-slot` names in render order. A component references only itself, a component it `inherits`, or the tiers above.
 
-**649 levers** (251 identity, 60 semantic, 338 component) · **36 components** · **34 state variables** (set by kit.css rules per state; not levers). Old names: `packages/core/spec/migration.json`, applied by `node packages/core/scripts/migrate-levers.mjs <path>`.
+**650 levers** (252 identity, 60 semantic, 338 component) · **36 components** · **34 state variables** (set by kit.css rules per state; not levers). Old names: `packages/core/spec/migration.json`, applied by `node packages/core/scripts/migrate-levers.mjs <path>`.
 
 ## The language: the core identity
 
@@ -362,6 +362,7 @@ The type scale's ratio, the three weights, tracking, case and slant.
 | `--nk-type-case` | keyword | `none` | none uppercase | Anything scanned (keys, titles, labels, captions) in caps or as written |
 | `--nk-type-slant` | keyword | `normal` | normal italic | The scanned voices upright or italic (a real italic where the face has one) |
 | `--nk-type-overhang` | length | `0em` |  | Trailing pad of a slanted voice (the italic's overhang); 0em when upright |
+| `--nk-type-overhang-clip` | length | `calc(var(--nk-type-overhang) * 2 + 0.06em)` |  | How far a clipped text window (TextRoll, a reel) reaches past its text on each side: twice the overhang, since a heavy slanted cap leans further than its trailing pad, plus a hair for antialiasing |
 | `--nk-type-scan-family` | font | `var(--font-display)` |  | Face of the scan voice (keys, buttons, tabs) |
 | `--nk-type-scan-style` | keyword | `var(--nk-type-slant)` | normal italic | Slant of the scan voice (keys, buttons, tabs) |
 | `--nk-type-scan-weight` | number | `800` | 100–900 | Weight of the scan voice (keys, buttons, tabs) |
