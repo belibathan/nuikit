@@ -108,22 +108,22 @@ Config = {
     size = nil,              -- the frame, in rem (1rem = 16px at 1080p)
     band = nil,              -- frame thickness, in rem
     anchor = nil,            -- bottom-left, bottom-right, top-left, top-right
-    -- The radar's box, width over height. nil follows routeClip: a square box ('box', the default) or
-    -- GTA's own (about 1.41, the map unsqueezed; every other candidate). Set it to force either.
+    -- The radar's box, width over height. nil follows routeClip: GTA's own (about 1.41, the map
+    -- unsqueezed: the default) or a square box ('box'). Set it to force either.
     aspect = nil,
     -- The GPS route. GTA draws it across the whole radar box, not through the mask that shapes the
-    -- map, so on a round map it ran out of the ring's sides (0.7.0 test, A4). What clips it is not
-    -- known beyond the radar box itself, so the default squares the box; the rest are candidates
-    -- to try in game (with Config.debug, F8: `nuikit_minimap route <x>`):
-    --   'box'      the default: the radar box becomes the hole's square (aspect 1): the route can't leave
-    --              that square, only its corners; the map is squeezed about 29% (the 0.7.0-next look)
-    --   'mask'     minimap_mask over the hole, GTA's aspect: the 0.7.0 placement (the map unsqueezed,
-    --              the route overhangs the ring's sides)
+    -- map, so on a round map it can run out of the ring's sides (0.7.0 test, A4). The default keeps
+    -- the map true to scale and accepts that; the rest are candidates to try in game (with
+    -- Config.debug, F8: `nuikit_minimap route <x>`; decision 56):
+    --   'mask'     the default: minimap_mask over the hole, GTA's aspect: the map unsqueezed, the route
+    --              may overhang the ring's sides (not seen in game since 0.7.0)
+    --   'box'      the radar box becomes the hole's square (aspect 1): the route can't leave that square,
+    --              only its corners; the map is squeezed about 29% (the 0.7.0-next look)
     --   'inset'    minimap_mask on the square inside the disc: if the route is cut to that component,
     --              nothing leaves the ring (the route then stops a little short of it at N/E/S/W)
     --   'texture'  our disc also replaces GTA's second radar mask texture (radarmask1g)
     --   'stock'    minimap_mask left where GTA has it: the control (does the component matter at all)
-    routeClip = 'box',
+    routeClip = 'mask',
     -- A spike, not seen in game: true slides GTA's radar (and its ring) 2.5rem toward its edge with
     -- the rest of the HUD when a menu hides it, frame by frame, instead of cutting it. If the radar
     -- doesn't move in game, GTA only takes new positions on a big-map flick: leave it false.

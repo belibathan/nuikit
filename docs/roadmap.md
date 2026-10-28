@@ -60,7 +60,7 @@ screen or another spec: it is a second server, and whatever that server breaks.
 
 ## Known issues, owner-only
 
-- GPS route outside the minimap ring (`Config.minimap.routeClip` candidates); minimap blank after repeated live
+- GPS route may overhang the round minimap's sides at GTA's aspect (decision 56; `routeClip = 'box'` holds it in by squeezing the map); minimap blank after repeated live
   restarts until the pause map opens.
 - Unproven: an empty `nuikit_cancel_key` leaves the cancel key unbound; `nuikit_screen` DUI never seen in game.
 - Owner only: GitHub About, topics and social preview ([`next/presentation.md`](next/presentation.md)); Discussions.
