@@ -3,6 +3,7 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { nuikit } from "vite-plugin-nuikit";
 import { defineConfig } from "vite";
+import { web } from "../../../scripts/vite-web.mjs";
 
 // qbx_taxijob's fxmanifest serves exactly html/meter.html, html/meter.js and html/meter.css
 // (no globs), so the build is exactly those three files: one script, one stylesheet, no chunks.
@@ -23,5 +24,5 @@ export default defineConfig({
       },
     },
   },
-  resolve: { alias: { "@": path.resolve(__dirname, "src") } },
+  resolve: web(__dirname),
 });

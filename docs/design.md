@@ -205,7 +205,7 @@ Before a registry component or hook merges:
 7. Meaning never by colour alone; `role="status"`, `role="progressbar"` with values; reading text at least 16px,
    labels at least 13px, in every theme.
 8. A `registry.json` entry with accurate dependencies and `meta` (`since`, `status`, `group`, `tier`); tests for any logic
-   in `registry/nuikit/test/`; `pnpm sync` after (copies in systems and addons are never edited by hand); a changeset
+   in `registry/nuikit/test/`; a changeset
    when it changes for users.
 
 **Deprecation, until 1.0 (Oct 27, 2026).** Nobody runs nuikit in production, so a replaced component is deleted in the

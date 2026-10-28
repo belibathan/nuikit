@@ -14,8 +14,10 @@
 //                                       by the nuikit resource: nuikit.json "fonts" / NUIKIT_FONTS), the
 //                                       nuikit resource's fonts/, the create-nuikit template's web/src/fonts/
 //   nuikit-core fxserver-compiler.js  → server/compiler.js (nuikit.json "compiler": true)
-// Copies are committed so each resource is complete on its own (you own the components, as with
-// shadcn). Never edit the copies here; edit the sources and run `pnpm sync`.
+// Components, hooks and lib/utils.ts are copied only into the create-nuikit template (what a user receives, as
+// with shadcn). Every in-repo UI (systems/*/web, addons/*/web) resolves them straight from the sources through
+// scripts/vite-web.mjs and its tsconfig paths, so nothing is duplicated there; their index.css is generated and
+// gitignored. Never edit a copy; edit the source and run `pnpm sync`.
 //
 // Pruning: scripts/sync-manifest.json records every file sync wrote, per target. A file sync wrote last
 // time and doesn't write now (a component dropped from nuikit.json) is deleted. Hand-written files are
@@ -148,7 +150,7 @@ const nuikitTokens = (mode) => {
 //   "baseline" the token language's own faces (Default's) ship with the UI, the others load from the nuikit resource
 //              (for overrides whose resource serves a fixed file list: the build inlines what it bundles);
 //   "nuikit"   every font loads from the nuikit resource (one copy per server; unproven, see the in-game
-//              check in bench/identity/results.md);
+//              check: unproven in game);
 //   false      no @font-face (a UI that brings its own fonts).
 // A font that fails to load falls back down the family's stack (system fonts); nothing breaks.
 const FONTS_DIR = path.join(root, "packages/core/fonts");
@@ -255,12 +257,15 @@ for (const t of targets) {
     for (const f of fs.readdirSync(FONTS_DIR)) if (/\.(woff2|txt)$/.test(f)) copy(`packages/core/fonts/${f}`, `${into}/${f}`);
   }
   const need = withDeps(t.components, t.hooks);
-  for (const c of need.components) copy(source(c), `web/src/components/ui/${c}.tsx`);
-  for (const h of need.hooks) copy(hookSource(h), `web/src/hooks/${h}.ts`);
+  // only the template receives copies; in-repo UIs resolve the sources (scripts/vite-web.mjs)
+  const copies = t.dir === "packages/create-nuikit/template";
+  if (copies) {
+    for (const c of need.components) copy(source(c), `web/src/components/ui/${c}.tsx`);
+    for (const h of need.hooks) copy(hookSource(h), `web/src/hooks/${h}.ts`);
+    if (need.components.length) copy(UTILS, "web/src/lib/utils.ts");
+  }
   const missing = missingPackages(t.dir, need.components);
   if (missing.length) console.warn(`  ! ${t.dir}/web/package.json is missing: ${missing.join(", ")}`);
-  // every UI with components (they all import cn from @/lib/utils)
-  if (t.components.length || fs.existsSync(path.join(root, t.dir, "web/src/lib/utils.ts"))) copy(UTILS, "web/src/lib/utils.ts");
   if (t.compiler) copy("packages/core/dist/fxserver-compiler.js", "server/compiler.js");
   if (t.css !== false) {
     const css = cssFor(fontMode, t.surface);

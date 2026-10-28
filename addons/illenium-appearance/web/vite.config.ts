@@ -1,8 +1,8 @@
-import path from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { nuikit } from "vite-plugin-nuikit";
 import { defineConfig, type Plugin } from "vite";
+import { web } from "../../../scripts/vite-web.mjs";
 
 /**
  * illenium-appearance's fxmanifest only serves `web/dist/index.html` and `web/dist/assets/*.js`, so a
@@ -36,5 +36,5 @@ export default defineConfig({
   plugins: [react(), tailwindcss(), nuikit({ hotInGame: false }), inlineCss()],
   base: "./",
   build: { outDir: "build", emptyOutDir: true, assetsInlineLimit: 100_000_000, modulePreload: { polyfill: false } },
-  resolve: { alias: { "@": path.resolve(__dirname, "src") } },
+  resolve: web(__dirname),
 });

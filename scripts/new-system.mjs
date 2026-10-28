@@ -49,9 +49,7 @@ pkg.version = version;
 // that file and append `&& vite build -c vite.module.config.ts` to join the host.
 pkg.scripts = { ...pkg.scripts, build: "tsc -b && vite build" };
 write("web/package.json", JSON.stringify(pkg, null, 2) + "\n");
-fs.mkdirSync(path.join(out, "web/src/lib"), { recursive: true });
-fs.copyFileSync(path.join(hud, "tsconfig.json"), path.join(out, "web/tsconfig.json"));
-fs.copyFileSync(path.join(hud, "src/lib/utils.ts"), path.join(out, "web/src/lib/utils.ts"));
+fs.copyFileSync(path.join(hud, "tsconfig.json"), path.join(out, "web/tsconfig.json")); // its paths resolve components, hooks and cn() from the sources
 write(
   "web/index.html",
   `<!doctype html>
@@ -70,16 +68,16 @@ write(
 );
 write(
   "web/vite.config.ts",
-  `import path from "node:path";
-import tailwindcss from "@tailwindcss/vite";
+  `import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { nuikit } from "vite-plugin-nuikit";
 import { defineConfig } from "vite";
+import { web } from "../../../scripts/vite-web.mjs";
 
 export default defineConfig({
   plugins: [react(), tailwindcss(), nuikit(${addon ? "{ hotInGame: false }" : ""})],
   base: "./",${addon ? `\n  build: { outDir: "build", emptyOutDir: true },` : ""}
-  resolve: { alias: { "@": path.resolve(__dirname, "src") } },
+  resolve: web(__dirname),
 });
 `,
 );

@@ -44,8 +44,8 @@ Log a new call in one row of [`decisions.md`](decisions.md).
 ## Who owns what
 
 Nobody owns files; the roadmap owns items. Two sessions on one item is the only thing to avoid: say in the commit what you
-took. Synced copies (`web/src/index.css`, `web/src/components/ui/*`, `lib/`, `client/*.lua` copies) are never edited by hand:
-change the source, `pnpm sync`. `registry.json` entries and `.changeset/*.md` are append-only.
+took. In-repo UIs resolve components from `registry/` and `vendor/` (nothing to edit there); `pnpm sync` writes the generated
+`index.css` and the Lua copies (`systems/nuikit/lib`, `client/*.lua`): change the source, run sync. `registry.json` entries and `.changeset/*.md` are append-only.
 
 ## The gate (about a minute, before each push)
 

@@ -1,8 +1,8 @@
-import path from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { nuikit } from "vite-plugin-nuikit";
 import { defineConfig } from "vite";
+import { web } from "../../../scripts/vite-web.mjs";
 
 // Builds into web/build; the release copies it over Renewed-Banking/web/public (ui_page 'web/public/index.html').
 // Renewed-Banking's server stops the resource unless web/public/build/bundle.js exists, so the entry
@@ -21,5 +21,5 @@ export default defineConfig({
       },
     },
   },
-  resolve: { alias: { "@": path.resolve(__dirname, "src") } },
+  resolve: web(__dirname),
 });

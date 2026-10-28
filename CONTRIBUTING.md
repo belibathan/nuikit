@@ -13,7 +13,7 @@ pnpm build        # packages, registry, site
 pnpm test         # unit tests
 pnpm typecheck
 pnpm proof        # renders shadcn in a real Chromium 103 and asserts the result
-pnpm sync         # regenerates the synced copies (index.css, components/ui); never hand-edit them
+pnpm sync         # writes every UI's generated index.css and the Lua copies; components resolve from registry/ and vendor/
 pnpm dev          # the website and playground at localhost:5173
 ```
 

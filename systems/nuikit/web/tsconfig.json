@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "jsx": "react-jsx",
@@ -9,8 +13,55 @@
     "skipLibCheck": true,
     "noEmit": true,
     "isolatedModules": true,
-    "types": ["vite/client", "node"],
-    "paths": { "@/*": ["./src/*"] }
+    "types": [
+      "vite/client",
+      "node"
+    ],
+    "paths": {
+      "@/components/ui/*": [
+        "./src/components/ui/*",
+        "../../../registry/nuikit/ui/*",
+        "../../../vendor/shadcn/ui/*"
+      ],
+      "@/hooks/*": [
+        "./src/hooks/*",
+        "../../../registry/nuikit/hooks/*",
+        "../../../vendor/shadcn/hooks/*"
+      ],
+      "@/lib/utils": [
+        "./src/lib/utils.ts",
+        "../../../registry/nuikit/lib/utils.ts"
+      ],
+      "@/blocks/*": [
+        "../../../registry/nuikit/blocks/*"
+      ],
+      "@/*": [
+        "./src/*"
+      ],
+      "react": [
+        "./node_modules/@types/react/index.d.ts"
+      ],
+      "react/jsx-runtime": [
+        "./node_modules/@types/react/jsx-runtime.d.ts"
+      ],
+      "react-dom": [
+        "./node_modules/@types/react-dom/index.d.ts"
+      ],
+      "react-dom/client": [
+        "./node_modules/@types/react-dom/client.d.ts"
+      ],
+      "nuikit-core": [
+        "./node_modules/nuikit-core/dist/index.d.ts"
+      ],
+      "nuikit-core/*": [
+        "./node_modules/nuikit-core/dist/*.d.ts"
+      ],
+      "*": [
+        "./node_modules/*"
+      ]
+    }
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }

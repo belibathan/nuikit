@@ -4,6 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { nuikit } from "vite-plugin-nuikit";
 import { defineConfig, type Plugin } from "vite";
+import { web } from "../../../scripts/vite-web.mjs";
 
 /**
  * Dev only: item images for the browser fixtures. In game they come from
@@ -54,5 +55,5 @@ export default defineConfig({
       },
     },
   },
-  resolve: { alias: { "@": path.resolve(__dirname, "src") } },
+  resolve: web(__dirname),
 });

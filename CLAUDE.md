@@ -46,8 +46,8 @@ Direction: `docs/vision.md`, then `docs/architecture.md`. Parallel agents: `docs
 | `systems/<name>` | `[nuikit]` resources (fxmanifest, Lua, `web/`). Reference UI: `systems/nuikit_pause`. |
 | `addons/<name>` | Overrides: new web UIs for other resources (ox_lib, ox_inventory…), built into that resource's UI folder. Clean-room from `docs/<name>-protocol.md`. |
 | `apps/www` | The site + registry host (Vercel, deploys from `main`). |
-| `scripts/` | `sync-template.mjs` (`pnpm sync`), `pack-systems.mjs` (`pnpm pack:systems` → `out/nuikit.zip`), `new-system.mjs` (scaffold), `vendor-shadcn.mjs`, `kit-merge.mjs`, `prune-branches.mjs` (delete fully-merged branches), `server/setup-windows.ps1`. |
-| `bench/host` | Host benchmark (iframes vs one frame) and the host's end-to-end check. Results in `results.md`. |
+| `scripts/` | `sync-template.mjs` (`pnpm sync`), `vite-web.mjs` (every in-repo UI's resolve: components and hooks straight from the sources), `pack-systems.mjs` (`pnpm pack:systems` → `out/nuikit.zip`), `new-system.mjs` (scaffold), `vendor-shadcn.mjs`, `kit-merge.mjs`, `prune-branches.mjs` (delete fully-merged branches), `server/setup-windows.ps1`. |
+| `bench/` | `screens/` (the POST-log replay for overrides), `adapters/` (adapter replay tests), `visual/` (`pnpm look`), `coverage/`. Results of finished experiments live in the docs, not here. |
 | `docs/` | `README.md` is the index. `roadmap.md` (the one tracker), `next/` (dispatch, decisions, foundation-gaps), `vision.md`, `architecture.md`, `protocol.md` (v1), `tokens.md`, `design.md` (the one design doc; `design/levers.md` is generated), `coverage.md`, `doctor.md`, the `*-protocol.md` specs, `releases/`. Superseded docs are deleted, not archived. |
 
 ## Commands
@@ -67,10 +67,14 @@ Each `systems/*` and `addons/*` has a `nuikit.json`:
 `{ "lua": ["nuikit.lua","bridge.lua"], "components": ["button","card"], "hooks": [], "target": {"resource","path"} }`.
 Systems and the template import the Lua runtime (`dependency 'nuikit'`, `shared_script '@nuikit/init.lua'`);
 `"lua"` vendors files into `client/` only for resources that must run without nuikit, and `"runtime": true`
-(the `nuikit` resource) receives `init.lua` + `lib/`. `pnpm sync` copies the listed Lua from `packages/core/lua`, components from `vendor/shadcn/ui` or
-`registry/nuikit/ui`, and writes `web/src/index.css` from `index.css.tpl` + `kit.css`. **Synced copies are committed
-but never edited by hand**: change the source, run `pnpm sync`. Feature CSS goes in a separate file
-(`app.css`, `pause.css`) imported after `index.css`.
+(the `nuikit` resource) receives `init.lua` + `lib/`.
+
+**In-repo UIs copy nothing.** `@/components/ui/*`, `@/hooks/*` and `@/lib/utils` resolve straight to
+`registry/nuikit`, `vendor/shadcn` and the generated `cn()` through `scripts/vite-web.mjs` (`resolve: web(__dirname)`
+in each `vite.config.ts`) and the matching `paths` in each `tsconfig.json`. A UI's own file of the same name wins.
+`pnpm sync` writes each UI's `web/src/index.css` (theme defaults + `kit.css` + fonts; gitignored: run sync before
+`dev` or `build`) and the Lua copies. Only `packages/create-nuikit/template` receives real component copies, because a
+user receives it. Feature CSS goes in a separate file (`app.css`, `pause.css`) imported after `index.css`.
 
 New system or override: `node scripts/new-system.mjs systems/nuikit_x "Title"` or
 `node scripts/new-system.mjs addons/<resource> "Title" --resource <resource> --path <ui folder>`.

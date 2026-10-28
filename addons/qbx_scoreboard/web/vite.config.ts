@@ -3,6 +3,7 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { nuikit } from "vite-plugin-nuikit";
 import { defineConfig, type Plugin } from "vite";
+import { web } from "../../../scripts/vite-web.mjs";
 
 // qbx_scoreboard's fxmanifest is untouched: `ui_page 'html/ui.html'` and `files { 'html/*' }`.
 // `html/*` only matches files directly in html/, so the build is flat and keeps the original
@@ -39,5 +40,5 @@ export default defineConfig({
       },
     },
   },
-  resolve: { alias: { "@": path.resolve(__dirname, "src") } },
+  resolve: web(__dirname),
 });

@@ -1,8 +1,8 @@
-import path from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { nuikit } from "vite-plugin-nuikit";
 import { defineConfig, type Plugin } from "vite";
+import { web } from "../../../scripts/vite-web.mjs";
 
 // qbx_idcard's fxmanifest is untouched: `ui_page 'web/index.html'` and a fixed file list
 // ('web/index.html', 'web/css/style.css', 'web/js/*.js', 'web/flags/*.png', 'web/badges/*.png',
@@ -38,5 +38,5 @@ export default defineConfig({
       },
     },
   },
-  resolve: { alias: { "@": path.resolve(__dirname, "src") } },
+  resolve: web(__dirname),
 });

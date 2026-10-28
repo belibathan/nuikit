@@ -47,7 +47,7 @@ describe("systems/nuikit_screen", () => {
   });
 });
 
-// the runtime's per-frame work, natives counted (the FPS budget: bench/showcase/results.md)
+// the runtime's per-frame work, natives counted (the FPS budget)
 const MAIN = fileURLToPath(new URL("../../../../systems/nuikit_screen/config.lua", import.meta.url));
 const RUNTIME = fileURLToPath(new URL("../../../../systems/nuikit_screen/client/main.lua", import.meta.url));
 const stubs = `

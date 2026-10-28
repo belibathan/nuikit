@@ -4,7 +4,6 @@
 //   spec/migration.json               old name → new name, for scripts/migrate-levers.mjs
 //   tokens/nuikit.levers.json         DTCG, every lever with $extensions.nuikit (tier, scope, part, range)
 //   ../../docs/design/levers.md       the catalog
-//   ../../bench/figma/out/levers.json the component tier, for bench/figma/gen.mjs
 // Idempotent: running it twice changes nothing. `--check` exits 1 if any output would change (CI).
 import fs from "node:fs";
 import path from "node:path";
@@ -249,18 +248,6 @@ const DTCG_TYPE = { color: "color", length: "dimension", angle: "number", time: 
     if (st.length) md.push(`State: ${st.map((s) => `\`${s.css}\``).join(", ")}.`, "");
   }
   write(path.join(repo, "docs/design/levers.md"), md.join("\n"));
-}
-
-// (f) Figma: the lever table bench/figma/gen.mjs resolves per theme (bench/figma/out is gitignored)
-{
-  const kitDefaults = Object.fromEntries(declared.map((l) => [l.name, render(l.default)]));
-  const levers = LEVERS.map((l) => ({ name: l.name, css: l.css, path: l.path, tier: l.tier, scope: l.scope, prop: l.prop, type: l.type, description: l.description, ...(l.range ? { range: l.range } : {}), ...(l.values ? { values: l.values } : {}) }));
-  const file = path.join(repo, "bench/figma/out/levers.json");
-  // not part of the idempotency check: an ignored build input
-  if (!CHECK) {
-    fs.mkdirSync(path.dirname(file), { recursive: true });
-    fs.writeFileSync(file, JSON.stringify({ levers, kitDefaults }) + "\n");
-  }
 }
 
 // ─────────────────────────────────────────── flush

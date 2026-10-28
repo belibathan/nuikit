@@ -1,7 +1,7 @@
 # The nuikit host (prototype)
 
 *Status: prototype, opt-in. The in-game measurement is in [Decision](#decision-measured-in-game-oct-19-2026). It works end to end in the browser harness
-(`bench/host/e2e.mjs`, 21/21), and `nuikit_hud` ships as a module. Whether it becomes a promise depends on one
+(an end-to-end check, 21/21, Oct 2026), and `nuikit_hud` ships as a module. Whether it becomes a promise depends on one
 in-game measurement; see [Decision](#decision).*
 
 FiveM gives every resource with a `ui_page` its own iframe, its own copy of React, fonts and styles, and its own
@@ -79,7 +79,7 @@ Chromium 103 like any nuikit stylesheet and inlined.
 
 ## Numbers
 
-From `bench/host/results.md` (desktop Chromium, 20 UIs):
+Measured Oct 19, 2026 (desktop Chromium 141, 20 UIs; the harness was deleted on Oct 28, the numbers stay here):
 
 | | Iframes, own process each | Iframes, one process | Host |
 |---|---|---|---|
@@ -114,4 +114,4 @@ So, as planned for this outcome:
 
 `packages/core/src/{host,module,boot,hosted}.ts` (page side), `packages/core/lua/host.lua` and hosted mode in
 `nuikit.lua`, `packages/vite/src/module.ts` (`nuikitModule()`), `systems/nuikit/web` (the host page),
-`systems/nuikit_hud` (reference module), `bench/host` (benchmark and end-to-end check).
+`systems/nuikit_hud` (reference module).
